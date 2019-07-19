@@ -2,6 +2,10 @@ import cv2
 import numpy as np
 from random import randint
 import colorsys
+import colorCopy
+
+def empty():
+    print("coming soon")
 
 def drawButtons(number,margin):
     global titlefeed
@@ -18,41 +22,32 @@ def drawButtons(number,margin):
         pt1=(margin, top)
         pt2=(wid - margin, top+height)
         (b,g,r)=modes[i][1]
-        b += 180
-        g += 180
-        r += 180
-        if b>255:b=255
-        elif g > 255: g = 255
-        elif r > 255: r = 255
-
         if mouseX<=pt2[0] and mouseX>=pt1[0] and mouseY<=pt2[1] and mouseY>=pt1[1]:
-            b-=110 #190
-            g-=110
-            r-=110
-
+            b-=100 #190
+            g-=100
+            r-=100
+        if b<0: b=0
+        elif g < 0: g = 0
+        elif r < 0: r = 0
         cv2.rectangle(temp, pt1,pt2, (b,g,r) if mouseX<=pt2[0] and mouseX>=pt1[0] and mouseY<=pt2[1] and mouseY>=pt1[1] else (255, 255, 255), -1)
+
+        top+=height+margin
+
+    titlefeed=cv2.addWeighted(temp,.7,titlefeed,.3,0)
+
+    top = 250 + margin
+    for i in range(number):
+        pt1=(margin, top)
+        pt2=(wid - margin, top+height)
+        top+=height+margin
+        (b,g,r)=(255,255,255)
+        font = cv2.FONT_HERSHEY_DUPLEX
+        size,_ = cv2.getTextSize(modes[i][0], font, 2, 4)
+        cv2.putText(titlefeed,modes[i][0],(wid//2-size[0]//2,top-margin-height//2+size[1]//2),font,2,(b,g,r) if mouseX<=pt2[0] and mouseX>=pt1[0] and mouseY<=pt2[1] and mouseY>=pt1[1] else modes[i][1],4)
         if mouseX<=pt2[0] and mouseX>=pt1[0] and mouseY<=pt2[1] and mouseY>=pt1[1]:
             frameCol=modes[i][1]
         else: frameCol=(0,0,0)
-        cv2.rectangle(temp, pt1,pt2, frameCol, 3)
-        top+=height+margin
-
-        b -= 190
-        g -= 190
-        r -= 190
-        if b<0:b=0
-        elif g < 0: g = 0
-        elif r < 0: r = 0
-
-        if mouseX<=pt2[0] and mouseX>=pt1[0] and mouseY<=pt2[1] and mouseY>=pt1[1]:
-            b=255
-            g=255
-            r=255
-
-        font = cv2.FONT_HERSHEY_DUPLEX
-        size,_ = cv2.getTextSize(modes[i][0], font, 2, 4)
-        cv2.putText(temp,modes[i][0],(wid//2-size[0]//2,top-margin-height//2+size[1]//2),font,2,(b,g,r) if mouseX<=pt2[0] and mouseX>=pt1[0] and mouseY<=pt2[1] and mouseY>=pt1[1] else modes[i][1],4)
-    titlefeed=cv2.addWeighted(temp,.7,titlefeed,.3,0)
+        cv2.rectangle(titlefeed, pt1,pt2, frameCol, 3)
 
 def drawTitle():
     global titlefeed
@@ -122,12 +117,13 @@ wid=int(9/16*hgt)
 titlefont = cv2.FONT_HERSHEY_DUPLEX
 hue=0
 _, titlefeed = cam.read()
-modes=[("practice",(0,0,255)),("training",(0,255,0)),("points",(255,0,0))] # bgr
+modes=[("practice",(0,0,255)),("training",(0,200,0)),("points",(255,0,0))] # name,bgr,method
 prgmName="Juggle _________"
 cv2.imshow(prgmName, titlefeed)
 cv2.setMouseCallback(prgmName,mouse)
 
 while True:
+
     _, titlefeed = cam.read()
     titlefeed = cv2.resize(titlefeed, (hgt, wid))
     titlefeed = cv2.rotate(titlefeed, cv2.ROTATE_90_CLOCKWISE)
@@ -141,11 +137,14 @@ while True:
 
     prgm= processClick(numModes,margin)
     if prgm>=0:print("ran ",modes[prgm][0])
+
+
+
     cv2.imshow(prgmName, titlefeed)
 
 
 
     ch = chr(0xFF & cv2.waitKey(5))
-    if ch == 'q':
+    if ch == 'q' :
         break
 

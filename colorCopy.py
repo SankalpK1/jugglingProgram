@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+from main import prgmName
 
 cam = cv2.VideoCapture(0)
 
@@ -40,22 +40,6 @@ def onmouse(event, x, y, flags, param):
                                            np.uint8(round((np.int(hsv_values[numBalls*3-3][2]) + np.int(hsv_values[numBalls*3-2][2]) + np.int(hsv_values[numBalls*3-1][2]))//3))])
             numClicked = 0
 
-
-while True:
-    if numClicked < 1:
-        __,img = cam.read()
-        img = cv2.resize(img, (1000, 563))
-        img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-    cv2.imshow('juggling', img)
-    cv2.setMouseCallback('juggling', onmouse)
-    cv2.waitKey(10)
-    ch = chr(0xFF & cv2.waitKey(5))
-    if ch == 'q':
-        exit(0)
-    elif ch==' ':
-        break
-
-
 def hueUpper (hue, range):
     if hue<179-range*(3/4)+15:
         return int (hue)+range*(3/4)+15
@@ -77,48 +61,59 @@ def satValLower (satVal, range):
     else:
         return 0
 
-while True:
-    _,img=cam.read()
-    img=cv2.resize(img,(1000,563))
-    img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-    hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    while True:
+        if numClicked < 1:
+            __,img = cam.read()
+            img = cv2.resize(img, (1000, 563))
+            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        cv2.imshow(prgmName, img)
+        cv2.setMouseCallback(prgmName, onmouse)
+        cv2.waitKey(10)
+        ch = chr(0xFF & cv2.waitKey(5))
+        if ch == 'q':
+            exit(0)
+        elif ch==' ':
+            break
 
-    # threshold = cv2.inRange(hsv, (101, 129, 22), (115, 255, 255))
-    mask=np.zeros((img.shape[0],img.shape[1],1), np.uint8)
+def run():
+    while True:
+        _,img=cam.read()
+        img=cv2.resize(img,(1000,563))
+        img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
-    for values in range(numBalls):
-        kernel = np.ones((3, 3), np.uint8)
-        # hsv_filtered = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
-        # hsv_filtered2 = cv2.GaussianBlur(hsv_filtered, (17,17), 0)
-        threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3*values]),
-                                                (satValLower(hsv_values2[values][1], hsv_ranges[3*values+1])), 0),
-                                                (hueUpper(hsv_values2[values][0], hsv_ranges[3*values]),(satValUpper(hsv_values2[values][1], hsv_ranges[3*values+1])), 255))
-        threshold_filtered = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
+        # threshold = cv2.inRange(hsv, (101, 129, 22), (115, 255, 255))
+        mask=np.zeros((img.shape[0],img.shape[1],1), np.uint8)
 
-        contrs, hier = cv2.findContours(threshold_filtered, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if len(contrs) != 0:
-            for i in range(len(contrs)):
-                if len(contrs[i]) >= 5:
-                    cv2.drawContours(img, contrs, -1, (150, 10, 255), 3)
-                    ellipse = cv2.fitEllipse(contrs[i])
-                    print(ellipse)
-                    cv2.ellipse(img, ellipse, (0, 255, 0), 2)
-                    # cv2.circle(img, (int((int(ellipse[0][1])+int(ellipse[1][1]))/2), int((int(ellipse[0][0])+int(ellipse[1][0]))/2)), 20, (255, 255, 255))
-                    cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 20, (255, 255, 255))
-                # else:
-                #     # optional to "delete" the small contours
-                #     cv2.drawContours(thresh, contours, -1, (0, 0, 0), -1)
-        # cv2.drawContours(img, contrs, -1, (0, 255, 0), 3)
-        mask=cv2.bitwise_or(mask,threshold)
+        for values in range(numBalls):
+            kernel = np.ones((3, 3), np.uint8)
+            # hsv_filtered = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
+            # hsv_filtered2 = cv2.GaussianBlur(hsv_filtered, (17,17), 0)
+            threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3*values]),
+                                                    (satValLower(hsv_values2[values][1], hsv_ranges[3*values+1])), 0),
+                                                    (hueUpper(hsv_values2[values][0], hsv_ranges[3*values]),(satValUpper(hsv_values2[values][1], hsv_ranges[3*values+1])), 255))
+            threshold_filtered = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
 
-    maskedimg=cv2.bitwise_and(img,img,mask=mask)
+            contrs, hier = cv2.findContours(threshold_filtered, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if len(contrs) != 0:
+                for i in range(len(contrs)):
+                    if len(contrs[i]) >= 5:
+                        cv2.drawContours(img, contrs, -1, (150, 10, 255), 3)
+                        ellipse = cv2.fitEllipse(contrs[i])
+                        print(ellipse)
+                        cv2.ellipse(img, ellipse, (0, 255, 0), 2)
+                        # cv2.circle(img, (int((int(ellipse[0][1])+int(ellipse[1][1]))/2), int((int(ellipse[0][0])+int(ellipse[1][0]))/2)), 20, (255, 255, 255))
+                        cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 20, (255, 255, 255))
+                    # else:
+                    #     # optional to "delete" the small contours
+                    #     cv2.drawContours(thresh, contours, -1, (0, 0, 0), -1)
+            # cv2.drawContours(img, contrs, -1, (0, 255, 0), 3)
+            mask=cv2.bitwise_or(mask,threshold)
 
-    cv2.imshow("wow", maskedimg)
-    ch = chr(0xFF & cv2.waitKey(1))
-    if ch == 'q':
-        break
+        maskedimg=cv2.bitwise_and(img,img,mask=mask)
 
+        cv2.imshow(prgmName, maskedimg)
+        ch = chr(0xFF & cv2.waitKey(1))
+        if ch == 'q':
+            break
 
-
-#RGB code:	R: 175 G: 15 B: 17
-# HSV:	359.25° 91.43% 68.63%
