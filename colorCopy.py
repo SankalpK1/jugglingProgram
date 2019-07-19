@@ -1,10 +1,13 @@
 import cv2
 import numpy as np
+import math
 
 
 cam = cv2.VideoCapture(0)
 
 global img
+
+frameNum = []
 
 numClicked = 0
 
@@ -15,6 +18,8 @@ hsv_values = []
 hsv_values2 = []
 
 hsv_ranges = []
+
+positions = []
 
 def onmouse(event, x, y, flags, param):
     global numBalls
@@ -39,6 +44,8 @@ def onmouse(event, x, y, flags, param):
                                            np.uint8(round((np.int(hsv_values[numBalls*3-3][1]) + np.int(hsv_values[numBalls*3-2][1]) + np.int(hsv_values[numBalls*3-1][1]))//3)),
                                            np.uint8(round((np.int(hsv_values[numBalls*3-3][2]) + np.int(hsv_values[numBalls*3-2][2]) + np.int(hsv_values[numBalls*3-1][2]))//3))])
             numClicked = 0
+            positions.append([[0, 0]])
+            frameNum.append(0)
 
 
 while True:
@@ -73,7 +80,7 @@ def satValUpper (satVal, range):
         return 255
 def satValLower (satVal, range):
     if satVal>range*(3/4)-20:
-        return int (satVal)-range*(3/4)-20
+        return int (satVal)-range*(3/4)-2
     else:
         return 0
 
@@ -101,19 +108,24 @@ while True:
                 if len(contrs[i]) >= 5:
                     cv2.drawContours(img, contrs, -1, (150, 10, 255), 3)
                     ellipse = cv2.fitEllipse(contrs[i])
-                    print(ellipse)
                     cv2.ellipse(img, ellipse, (0, 255, 0), 2)
                     # cv2.circle(img, (int((int(ellipse[0][1])+int(ellipse[1][1]))/2), int((int(ellipse[0][0])+int(ellipse[1][0]))/2)), 20, (255, 255, 255))
-                    cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 20, (255, 255, 255))
-                # else:
+                    # cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 20, (255, 255, 255))
+                    positions[values].append([int(ellipse[0][0]), int(ellipse[0][1])])
+                    frameNum[values] += 1
+                    if frameNum[values] >= 2:
+                        for i in range(frameNum[values]):
+                            cv2.line(img, (positions[values][i - 1][0], positions[values][i - 1][1]), (positions[values][i][0], positions[values][i][1]), cv2.cvtColor((hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]), cv2.COLOR_HSV2BGR), 5)
+                    break
+                # else:q
                 #     # optional to "delete" the small contours
                 #     cv2.drawContours(thresh, contours, -1, (0, 0, 0), -1)
         # cv2.drawContours(img, contrs, -1, (0, 255, 0), 3)
-        mask=cv2.bitwise_or(mask,threshold)
+        # mask=cv2.bitwise_or(mask,threshold)
 
     maskedimg=cv2.bitwise_and(img,img,mask=mask)
 
-    cv2.imshow("wow", maskedimg)
+    cv2.imshow("wow", img)
     ch = chr(0xFF & cv2.waitKey(1))
     if ch == 'q':
         break
