@@ -119,19 +119,30 @@ while True:
                     frameNum[values] += 1
                     if frameNum[values] >= 2:
                         for j in range(2, frameNum[values]):
-                            lineColor = np.uint8([[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
-                            cv2.line(img, (positions[values][j - 1][0], positions[values][j - 1][1]), (positions[values][j][0], positions[values][j][1]),
-                                     (cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][0], cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][1], cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][2]), thickness=5, lineType=8, shift=0)
+                            lineColor = np.uint8(
+                                [[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
+                            #
+                            # print(cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)[0][0][0])
+                            bgrColor = cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)
+                            actualbgr = bgrColor[0][0]
+                            aaa = tuple([int(x) for x in actualbgr])
+                            cv2.line(img, (positions[values][j - 1][0], positions[values][j - 1][1]),
+                                     (positions[values][j][0], positions[values][j][1]),
+                                    aaa , thickness=5)
                     break
         if existsLine == 0:
             if frameNum[values] >= 2:
                 for j in range(2, frameNum[values]):
-                    lineColor = np.uint8([[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
+                    lineColor = np.uint8(
+                        [[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
+                    #
+                    # print(cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)[0][0][0])
+                    bgrColor = cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)
+                    actualbgr = bgrColor[0][0]
+                    aaa = tuple([int(x) for x in actualbgr])
                     cv2.line(img, (positions[values][j - 1][0], positions[values][j - 1][1]),
                              (positions[values][j][0], positions[values][j][1]),
-                             (cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][0],
-                              cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][1],
-                              cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][2]), thickness=5, lineType=8, shift=0)
+                             aaa, thickness=5)
 
                 # else:
                 #     # optional to "delete" the small contours
