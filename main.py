@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from random import randint
 import colorsys
-from colorCopy import run as color
+from colorCopy import main as color
 from window_info import *
 
 
@@ -132,7 +132,7 @@ cam = cv2.VideoCapture(0)
 titlefont = cv2.FONT_HERSHEY_DUPLEX
 hue = 0
 _, titlefeed = cam.read()
-modes = [("practice", (0, 0, 255), color), ("training", (0, 220, 0), empty),
+modes = [("practice", (0, 0, 255), color), ("training", (0, 210, 0), empty),
          ("points", (255, 0, 0), empty)]  # name,bgr,method
 
 cv2.imshow(prgmName(), titlefeed)
