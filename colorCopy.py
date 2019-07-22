@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+import colorsys
 
 
 cam = cv2.VideoCapture(0)
@@ -20,6 +21,8 @@ hsv_values2 = []
 hsv_ranges = []
 
 positions = []
+
+existsLine = 0
 
 def onmouse(event, x, y, flags, param):
     global numBalls
@@ -59,7 +62,7 @@ while True:
     ch = chr(0xFF & cv2.waitKey(5))
     if ch == 'q':
         exit(0)
-    elif ch==' ':
+    elif ch ==' ':
         break
 
 
@@ -99,13 +102,14 @@ while True:
         # hsv_filtered2 = cv2.GaussianBlur(hsv_filtered, (17,17), 0)
         threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3*values]),
                                                 (satValLower(hsv_values2[values][1], hsv_ranges[3*values+1])), 0),
-                                                (hueUpper(hsv_values2[values][0], hsv_ranges[3*values]),(satValUpper(hsv_values2[values][1], hsv_ranges[3*values+1])), 255))
+                                                (hueUpper(hsv_values2[values][0], hsv_ranges[3*values]),(satValUpper(hsv_values2[values][1],  hsv_ranges[3*values+1])), 255))
         threshold_filtered = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
-
+        existsLine = 0
         contrs, hier = cv2.findContours(threshold_filtered, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if len(contrs) != 0:
             for i in range(len(contrs)):
-                if len(contrs[i]) >= 5:
+                if len(contrs[i]) >= 15:
+                    existsLine = 1
                     cv2.drawContours(img, contrs, -1, (150, 10, 255), 3)
                     ellipse = cv2.fitEllipse(contrs[i])
                     cv2.ellipse(img, ellipse, (0, 255, 0), 2)
@@ -114,12 +118,24 @@ while True:
                     positions[values].append([int(ellipse[0][0]), int(ellipse[0][1])])
                     frameNum[values] += 1
                     if frameNum[values] >= 2:
-                        for i in range(frameNum[values]):
-                            cv2.line(img, (positions[values][i - 1][0], positions[values][i - 1][1]), (positions[values][i][0], positions[values][i][1]), cv2.cvtColor((hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]), cv2.COLOR_HSV2BGR), 5)
+                        for j in range(2, frameNum[values]):
+                            lineColor = np.uint8([[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
+                            cv2.line(img, (positions[values][j - 1][0], positions[values][j - 1][1]), (positions[values][j][0], positions[values][j][1]),
+                                     (cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][0], cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][1], cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][2]), thickness=5, lineType=8, shift=0)
                     break
-                # else:q
+        if existsLine == 0:
+            if frameNum[values] >= 2:
+                for j in range(2, frameNum[values]):
+                    lineColor = np.uint8([[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
+                    cv2.line(img, (positions[values][j - 1][0], positions[values][j - 1][1]),
+                             (positions[values][j][0], positions[values][j][1]),
+                             (cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][0],
+                              cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][1],
+                              cv2.cvtColor(lineColor, (cv2.COLOR_HSV2BGR))[0][0][2]), thickness=5, lineType=8, shift=0)
+
+                # else:
                 #     # optional to "delete" the small contours
-                #     cv2.drawContours(thresh, contours, -1, (0, 0, 0), -1)
+                #     cv2.drawContours(img, contrs, -1,  (0, 0, 0), -1)1
         # cv2.drawContours(img, contrs, -1, (0, 255, 0), 3)
         # mask=cv2.bitwise_or(mask,threshold)
 
