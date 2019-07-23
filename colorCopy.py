@@ -102,13 +102,13 @@ def satValLower (satVal, range):
         return 0
 
 while True:
-    _,img=cam.read()
+    _,imgCam=cam.read()
+    img = cv2.inRange(imgCam, (0, 0, 30), (179, 255, 200))
     img=cv2.resize(img,(1000,563))
     img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
     hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
     (height,width,depth) = img.shape
     fakeImage = np.zeros((height, width, depth), np.uint8)
-    # threshold = cv2.inRange(hsv, (101, 129, 22), (115, 255, 255))
     mask=np.zeros((img.shape[0],img.shape[1],1), np.uint8)
 
     for values in range(numBalls):
