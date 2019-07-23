@@ -112,7 +112,7 @@ while True:
     mask=np.zeros((img.shape[0],img.shape[1],1), np.uint8)
 
     for values in range(numBalls):
-        kernel = np.ones((11, 11), np.uint8)
+        kernel = np.ones((3, 3), np.uint8)
         # hsv_filtered = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
         # hsv_filtered2 = cv2.GaussianBlur(hsv_filtered, (17,17), 0)
         threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3*values]),
