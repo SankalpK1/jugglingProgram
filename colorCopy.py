@@ -91,6 +91,10 @@ def main():
 
     yVelocityPrev = []
 
+    yHeight = 300
+
+    isAbove = []
+
     numThrown = 0
     def onmouse(event, x, y, flags, param):
         global numBalls
@@ -121,6 +125,7 @@ def main():
                 yVelocity.append(0)
                 xVelocityPrev.append(0)
                 yVelocityPrev.append(0)
+                isAbove.append(0)
 
 
     while True:
@@ -193,17 +198,22 @@ def main():
                         positions[values].append([int(ellipse[0][0]), int(ellipse[0][1])])
                         frameNum[values] += 1
                         if frameNum[values] >= 2:
-                            xVelocityPrev[values] = positions[values][frameNum[values]-1][0] - positions[values][frameNum[values]-2][0]
-                            xVelocity[values] = positions[values][frameNum[values]][0] - positions[values][frameNum[values] - 1][0]
-                            yVelocityPrev[values] = positions[values][frameNum[values] - 1][1] - positions[values][frameNum[values] - 2][1]
-                            yVelocity[values] = positions[values][frameNum[values]][1] - positions[values][frameNum[values] - 1][1]
-                            totalVelocityPrev = math.sqrt(xVelocityPrev[values]*xVelocityPrev[values] + yVelocityPrev[values]*yVelocityPrev[values])
-                            totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
+                            # xVelocityPrev[values] = positions[values][frameNum[values]-1][0] - positions[values][frameNum[values]-2][0]
+                            # xVelocity[values] = positions[values][frameNum[values]][0] - positions[values][frameNum[values] - 1][0]
+                            # yVelocityPrev[values] = positions[values][frameNum[values] - 1][1] - positions[values][frameNum[values] - 2][1]
+                            # yVelocity[values] = positions[values][frameNum[values]][1] - positions[values][frameNum[values] - 1][1]
+                            # totalVelocityPrev = math.sqrt(xVelocityPrev[values]*xVelocityPrev[values] + yVelocityPrev[values]*yVelocityPrev[values])
+                            # totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
                             (height, width, depth) = img.shape
                             nonImage = np.zeros((height, width, depth), np.uint8)
-                            # print (xVelocity[values])
-                            if yVelocity[values] < 0 and yVelocityPrev[values] > 0:
+                            # # print (xVelocity[values])
+                            # if yVelocity[values] < 0 and yVelocityPrev[values] > 0:
+                            # print (isAbove[values])
+                            if (positions[values][frameNum[values]][1]>yHeight and isAbove[values] == 1):
+                                isAbove[values] = 0
+                            if (positions[values][frameNum[values]][1]<yHeight and isAbove[values] == 0):
                                 numThrown+=1
+                                isAbove[values] = 1
                                 print (numThrown)
                             for j in range(2, frameNum[values]):
                                 lineColor = np.uint8(
