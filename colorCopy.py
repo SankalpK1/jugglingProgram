@@ -103,11 +103,11 @@ def satValLower (satVal, range):
 
 while True:
     _,imgCam=cam.read()
+    imgCam=cv2.resize(imgCam,(1000,563))
+    imgCam=cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
+    hsv=cv2.cvtColor(imgCam,cv2.COLOR_BGR2HSV)
     camMask = cv2.inRange(imgCam, (0, 0, 30), (179, 255, 200))
-    img = cv2.add(camMask, imgCam)
-    img=cv2.resize(img,(1000,563))
-    img=cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-    hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    img = cv2.bitwise_and(imgCam, imgCam, mask=camMask)
     (height,width,depth) = img.shape
     fakeImage = np.zeros((height, width, depth), np.uint8)
     mask=np.zeros((img.shape[0],img.shape[1],1), np.uint8)
