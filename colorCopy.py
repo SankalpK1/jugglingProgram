@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import math
 import colorsys
+from window_info import *
 
 
 cam = cv2.VideoCapture(0)
@@ -33,10 +34,13 @@ xVelocityPrev = []
 yVelocityPrev = []
 
 numThrown = 0
+timestamp=0
+check=False
 
-def main():
-    cam = cv2.VideoCapture(0)
-
+def main(live):
+    global timestamp
+    global cam
+    global check
     global img
 
     global frameNum
@@ -65,7 +69,18 @@ def main():
 
     global numThrown
 
-    cam = cv2.VideoCapture(0)
+    if live:
+        cam = cv2.VideoCapture(0)
+    else:
+        cam=cv2.VideoCapture("quicktest.mp4")
+
+    def ontrack(val):
+        global timestamp
+        positions=[]
+        positions.append([[0, 0]])
+        for _ in range(numBalls):
+            positions.append([[0, 0]])
+        timestamp=val
 
     frameNum = []
 
@@ -126,15 +141,22 @@ def main():
                 xVelocityPrev.append(0)
                 yVelocityPrev.append(0)
                 isAbove.append(0)
-
-
+    if not live:
+        cv2.createTrackbar("frames:", prgmName, 0, int(cam.get(cv2.CAP_PROP_FRAME_COUNT))-1,ontrack)
     while True:
         if numClicked < 1:
-            __,img = cam.read()
-            img = cv2.resize(img, (1000, 563))
+            if live:
+                _, img = cam.read()
+            else:
+                # if
+                cam.set(cv2.CAP_PROP_POS_FRAMES, timestamp)
+                _,img=cam.read()
+
+            img = cv2.resize(img, (hgt, wid))
+
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-        cv2.imshow('juggling', img)
-        cv2.setMouseCallback('juggling', onmouse)
+        cv2.imshow(prgmName, img)
+        cv2.setMouseCallback(prgmName, onmouse)
         cv2.waitKey(10)
         ch = chr(0xFF & cv2.waitKey(5))
         if ch == 'q':
@@ -165,9 +187,15 @@ def main():
             return 0
 
     while True:
-        _,imgCam=cam.read()
-        imgCam=cv2.resize(imgCam,(1000,563))
-        imgCam=cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
+        if live:
+            _, imgCam = cam.read()
+        else:
+            # if
+            cam.set(cv2.CAP_PROP_POS_FRAMES, timestamp)
+            _, imgCam = cam.read()
+        imgCam=cv2.resize(imgCam,(hgt,wid))
+
+        imgCam = cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
         hsv=cv2.cvtColor(imgCam,cv2.COLOR_BGR2HSV)
         img = imgCam
         (height,width,depth) = img.shape
@@ -253,7 +281,7 @@ def main():
         #
         # maskedimg=cv2.bitwise_and(img,img,mask=mask)
 
-        cv2.imshow("wow", img)
+        cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
             break

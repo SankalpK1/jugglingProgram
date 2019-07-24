@@ -7,7 +7,7 @@ from window_info import *
 import math
 
 
-def empty():
+def empty(live):
     print("coming soon")
 
 
@@ -206,7 +206,7 @@ while True:
     prgm = processClick(numModes, margin)
     if prgm >= 0:
         print("ran ", modes[prgm][0])
-        modes[prgm][2]()
+        modes[prgm][2](live)
         cv2.setMouseCallback(prgmName, mouse)
 
     cv2.imshow(prgmName, titlefeed)
