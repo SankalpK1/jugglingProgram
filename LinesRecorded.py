@@ -6,7 +6,7 @@ from window_info import *
 
 
 cam = cv2.VideoCapture(0)
-
+i=0
 global img
 
 frameNum = []
@@ -38,6 +38,7 @@ timestamp=0
 check=False
 
 def main():
+    global i
     global timestamp
     global cam
     global check
@@ -179,7 +180,8 @@ def main():
     while ret:
         print(ret)
         if not ret: break
-        imgCam=cv2.resize(imgCam,(cam.get(cv2.CAP_PROP_FRAME_HEIGHT),cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
+        # imgCam=cv2.resize(imgCam,(int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)),int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))))
+        imgCam=cv2.resize(imgCam,(hgt,wid))
 
         #imgCam = cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
         hsv=cv2.cvtColor(imgCam,cv2.COLOR_BGR2HSV)
@@ -274,9 +276,25 @@ def main():
         if ch == 'q':
             return
 
-    i=0
+
+    def ontrack(val):
+        global i
+        i=val
+
+    play=True
+    cv2.createTrackbar("Frame: ",prgmName,0,len(frames),ontrack)
     while i<len(frames):
-        imgCam = cv2.resize(imgCam, (hgt, wid))
+        frame = cv2.rotate(frames[i], cv2.ROTATE_90_CLOCKWISE)
+        frame = cv2.resize(frame, (wid,hgt))
+
+        cv2.imshow(prgmName,frame)
+        if play:
+            i+=1
+        ch = chr(0xFF & cv2.waitKey(10))
+        if ch == 'q':
+            return
+        if ch==" ":
+            play=not play
 
 
     #RGB code:	R: 175 G: 15 B: 17
