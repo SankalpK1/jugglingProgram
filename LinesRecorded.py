@@ -32,12 +32,14 @@ yVelocity = []
 xVelocityPrev = []
 
 yVelocityPrev = []
-
+speed=65
 numThrown = 0
 timestamp=0
 check=False
-
+play=True
 def main():
+    global speed
+    global play
     global i
     global timestamp
     global cam
@@ -70,7 +72,7 @@ def main():
 
     global numThrown
 
-    cam = cv2.VideoCapture("jugglyzev.mp4")
+    cam = cv2.VideoCapture("bounce.mp4")
 
     frameNum = []
 
@@ -176,8 +178,14 @@ def main():
 
     frames = []
     ret = True
-    imgCam=img
+    _,imgCam=cam.read()
+    black=np.zeros((hgt,wid,3),np.uint8)
+    cv2.putText(black,"loading...",(10,20),cv2.FONT_HERSHEY_DUPLEX,3,(0,0,0),4)
+    cv2.imshow(prgmName,black)
+
     while ret:
+
+
         print(ret)
         if not ret: break
         # imgCam=cv2.resize(imgCam,(int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)),int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))))
@@ -279,19 +287,30 @@ def main():
 
     def ontrack(val):
         global i
+        global play
+        play=False
         i=val
 
-    play=True
-    cv2.createTrackbar("Frame: ",prgmName,0,len(frames),ontrack)
-    while i<len(frames):
+    def speedchange(val):
+        global speed
+        speed=val+20
+
+    # frames[0]=frames[1].copy()
+
+    cv2.createTrackbar("Frame: ",prgmName,0,len(frames)-2,ontrack)
+    cv2.createTrackbar("Speed: ", prgmName, 45, 57, speedchange)
+    while True:
         frame = cv2.rotate(frames[i], cv2.ROTATE_90_CLOCKWISE)
         frame = cv2.resize(frame, (wid,hgt))
 
         cv2.imshow(prgmName,frame)
-        if play:
+        if play and i<len(frames)-1:
+            cv2.setTrackbarPos("Frame: ",prgmName,i)
+            play=True
             i+=1
-        ch = chr(0xFF & cv2.waitKey(10))
+        ch = chr(0xFF & cv2.waitKey(80-speed))
         if ch == 'q':
+            cv2.destroyWindow(prgmName);
             return
         if ch==" ":
             play=not play
