@@ -37,7 +37,7 @@ numThrown = 0
 timestamp=0
 check=False
 
-def main(live):
+def main():
     global timestamp
     global cam
     global check
@@ -69,18 +69,7 @@ def main(live):
 
     global numThrown
 
-    if live:
-        cam = cv2.VideoCapture(0)
-    else:
-        cam=cv2.VideoCapture("quicktest.mp4")
-
-    def ontrack(val):
-        global timestamp
-        positions=[]
-        positions.append([[0, 0]])
-        for _ in range(numBalls):
-            positions.append([[0, 0]])
-        timestamp=val
+    cam = cv2.VideoCapture(0)
 
     frameNum = []
 
@@ -141,17 +130,12 @@ def main(live):
                 xVelocityPrev.append(0)
                 yVelocityPrev.append(0)
                 isAbove.append(0)
-    if not live:
-        cv2.createTrackbar("frames:", prgmName, 0, int(cam.get(cv2.CAP_PROP_FRAME_COUNT))-1,ontrack)
     while True:
         if numClicked < 1:
-            if live:
-                _, img = cam.read()
-            else:
-                # if
-                cam.set(cv2.CAP_PROP_POS_FRAMES, timestamp)
-                _,img=cam.read()
+            _, img = cam.read()
 
+
+            img = cv2.resize(img, (hgt//2, wid//2)) #test
             img = cv2.resize(img, (hgt, wid))
 
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
@@ -187,12 +171,9 @@ def main(live):
             return 0
 
     while True:
-        if live:
-            _, imgCam = cam.read()
-        else:
-            # if
-            cam.set(cv2.CAP_PROP_POS_FRAMES, timestamp)
-            _, imgCam = cam.read()
+        _, imgCam = cam.read()
+
+        imgCam = cv2.resize(imgCam, (hgt//2, wid//2))
         imgCam=cv2.resize(imgCam,(hgt,wid))
 
         imgCam = cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
