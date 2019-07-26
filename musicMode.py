@@ -3,7 +3,7 @@ import numpy as np
 import math
 import colorsys
 import socket
-
+from window_info import *
 
 cam = cv2.VideoCapture(0)
 
@@ -37,8 +37,6 @@ numThrown = 0
 
 sock = socket.socket()
 host = 'localhost'
-port = 2343
-sock.connect((host, port))
 
 def main(live):
     cam = cv2.VideoCapture(0)
@@ -137,10 +135,10 @@ def main(live):
     while True:
         if numClicked < 1:
             __,img = cam.read()
-            img = cv2.resize(img, (1000, 563))
+            img = cv2.resize(img, (hgt, wid))
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-        cv2.imshow('juggling', img)
-        cv2.setMouseCallback('juggling', onmouse)
+        cv2.imshow(prgmName, img)
+        cv2.setMouseCallback(prgmName, onmouse)
         cv2.waitKey(10)
         ch = chr(0xFF & cv2.waitKey(5))
         if ch == 'q':
@@ -172,7 +170,7 @@ def main(live):
 
     while True:
         _,imgCam=cam.read()
-        imgCam=cv2.resize(imgCam,(1000,563))
+        imgCam=cv2.resize(imgCam,(hgt,wid))
         imgCam=cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
         hsv=cv2.cvtColor(imgCam,cv2.COLOR_BGR2HSV)
         img = imgCam
@@ -211,8 +209,20 @@ def main(live):
                             totalVelocityPrev = math.sqrt(xVelocityPrev[values]*xVelocityPrev[values] + yVelocityPrev[values]*yVelocityPrev[values])
                             totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
                             velocityAngle = math.atan2(float(yVelocity[values]), float(xVelocity[values]))
-                            print (velocityAngle)
-                            sock.sendall((str(totalVelocity)+';').encode())
+                            if (positions[values][frameNum[values]][0]>int(wid/2)):
+                                port = 1024
+                                sock.connect((host, port))
+                                sock.sendall((str(totalVelocity) + ';').encode())
+                                port = 2343
+                                sock.connect((host, port))
+                                sock.sendall((str(positions[values][frameNum[values]][1]) + ';').encode())
+                            elif (positions[values][frameNum[values]][0]<int(wid/2)):
+                                port = 1025
+                                sock.connect((host, port))
+                                sock.sendall((str(totalVelocity) + ';').encode())
+                                port = 2344
+                                sock.connect((host, port))
+                                sock.sendall((str(positions[values][frameNum[values]][1]) + ';').encode())
                             # (height, width, depth) = img.shape
                             # nonImage = np.zeros((height, width, depth), np.uint8)
                             # # print (xVelocity[values])
@@ -262,7 +272,7 @@ def main(live):
         #
         # maskedimg=cv2.bitwise_and(img,img,mask=mask)
 
-        cv2.imshow("wow", img)
+        cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
             break
