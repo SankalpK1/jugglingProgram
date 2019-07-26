@@ -215,9 +215,9 @@ def main(live):
                             totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
                             velocityAngle = math.atan2(float(yVelocity[values]), float(xVelocity[values]))
                             if (positions[values][frameNum[values]][0]>int(wid/2)):
-                                sock1.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50) + ';' + (str(totalVelocity/10) + ';')).encode())
+                                sock1.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50 + 200 * values) + ';' + (str(totalVelocity/10) + ';')).encode())
                             elif (positions[values][frameNum[values]][0]<int(wid/2)):
-                                sock2.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50) + ';' + (str(totalVelocity/10) + ';')).encode())
+                                sock2.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50 + 200 * values) + ';' + (str(totalVelocity/10) + ';')).encode())
                             # (height, width, depth) = img.shape
                             # nonImage = np.zeros((height, width, depth), np.uint8)
                             # # print (xVelocity[values])
