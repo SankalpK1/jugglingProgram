@@ -35,8 +35,13 @@ yVelocityPrev = []
 
 numThrown = 0
 
-sock = socket.socket()
+sock1 = socket.socket()
 host = 'localhost'
+port1 = 2343
+sock1.connect((host, port1))
+sock2 = socket.socket()
+port2 = 2344
+sock2.connect((host, port2))
 
 def main(live):
     cam = cv2.VideoCapture(0)
@@ -210,19 +215,9 @@ def main(live):
                             totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
                             velocityAngle = math.atan2(float(yVelocity[values]), float(xVelocity[values]))
                             if (positions[values][frameNum[values]][0]>int(wid/2)):
-                                port = 1024
-                                sock.connect((host, port))
-                                sock.sendall((str(totalVelocity) + ';').encode())
-                                port = 2343
-                                sock.connect((host, port))
-                                sock.sendall((str(positions[values][frameNum[values]][1]) + ';').encode())
+                                sock1.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50) + ';' + (str(totalVelocity/10) + ';')).encode())
                             elif (positions[values][frameNum[values]][0]<int(wid/2)):
-                                port = 1025
-                                sock.connect((host, port))
-                                sock.sendall((str(totalVelocity) + ';').encode())
-                                port = 2344
-                                sock.connect((host, port))
-                                sock.sendall((str(positions[values][frameNum[values]][1]) + ';').encode())
+                                sock2.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50) + ';' + (str(totalVelocity/10) + ';')).encode())
                             # (height, width, depth) = img.shape
                             # nonImage = np.zeros((height, width, depth), np.uint8)
                             # # print (xVelocity[values])
