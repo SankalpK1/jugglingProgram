@@ -191,8 +191,9 @@ def main(live):
             # hsv_filtered = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
             # hsv_filtered2 = cv2.GaussianBlur(hsv_filtered, (17,17), 0)
             threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3 * values]),
-                                          0, 50),
-                                    (hueUpper(hsv_values2[values][0], hsv_ranges[3 * values]), 255, 205))
+                                          (satValLower(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 50),
+                                    (hueUpper(hsv_values2[values][0], hsv_ranges[3 * values]),
+                                     (satValUpper(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 225))
             threshold_filtered = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
             existsLine = 0
             contrs, hier = cv2.findContours(threshold_filtered, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
