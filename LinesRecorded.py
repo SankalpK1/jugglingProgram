@@ -72,7 +72,7 @@ def main():
 
     global numThrown
 
-    cam = cv2.VideoCapture("bounce.mp4")
+    cam = cv2.VideoCapture("bettezev.mp4")
 
     frameNum = []
 
@@ -180,7 +180,7 @@ def main():
     ret = True
     _,imgCam=cam.read()
     black=np.zeros((hgt,wid,3),np.uint8)
-    cv2.putText(black,"loading...",(10,20),cv2.FONT_HERSHEY_DUPLEX,3,(0,0,0),4)
+    cv2.putText(black,"loading...",(10,100),cv2.FONT_HERSHEY_DUPLEX,3,(255,255,255),5)
     cv2.imshow(prgmName,black)
 
     while ret:

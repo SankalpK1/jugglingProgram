@@ -3,7 +3,7 @@ import numpy as np
 import math
 import colorsys
 import socket
-
+from window_info import *
 
 cam = cv2.VideoCapture(0)
 
@@ -132,10 +132,10 @@ def main(live):
     while True:
         if numClicked < 1:
             __,img = cam.read()
-            img = cv2.resize(img, (1000, 563))
+            img = cv2.resize(img, (hgt, wid))
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-        cv2.imshow('juggling', img)
-        cv2.setMouseCallback('juggling', onmouse)
+        cv2.imshow(prgmName, img)
+        cv2.setMouseCallback(prgmName, onmouse)
         cv2.waitKey(10)
         ch = chr(0xFF & cv2.waitKey(5))
         if ch == 'q':
@@ -167,7 +167,7 @@ def main(live):
 
     while True:
         _,imgCam=cam.read()
-        imgCam=cv2.resize(imgCam,(1000,563))
+        imgCam=cv2.resize(imgCam,(hgt,wid))
         imgCam=cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
         hsv=cv2.cvtColor(imgCam,cv2.COLOR_BGR2HSV)
         img = imgCam
@@ -254,7 +254,7 @@ def main(live):
         #
         # maskedimg=cv2.bitwise_and(img,img,mask=mask)
         cv2.line(img, (0, yHeight), (563, yHeight), (0, 255, 0))
-        cv2.imshow("wow", img)
+        cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
             break

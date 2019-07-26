@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import math
 import colorsys
+from window_info import *
 
 
 cam = cv2.VideoCapture(0)
@@ -131,10 +132,10 @@ def main():
     while True:
         if numClicked < 1:
             __,img = cam.read()
-            img = cv2.resize(img, (1000, 563))
+            img = cv2.resize(img, (hgt,wid))
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-        cv2.imshow('juggling', img)
-        cv2.setMouseCallback('juggling', onmouse)
+        cv2.imshow(prgmName, img)
+        cv2.setMouseCallback(prgmName, onmouse)
         cv2.waitKey(10)
         ch = chr(0xFF & cv2.waitKey(5))
         if ch == 'q':
@@ -253,7 +254,7 @@ def main():
         # img = cv2.addWeighted(fakeImage, 0.9, img, 0.1, 100)
         # maskedimg=cv2.bitwise_and(img,img,mask=mask)
 
-        cv2.imshow("wow", img)
+        cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
             break
