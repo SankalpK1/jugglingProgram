@@ -144,7 +144,7 @@ def main(live):
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
         cv2.imshow(prgmName, img)
         cv2.setMouseCallback(prgmName, onmouse)
-        cv2.waitKey(10)
+
         ch = chr(0xFF & cv2.waitKey(5))
         if ch == 'q':
             return
