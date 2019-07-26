@@ -3,6 +3,8 @@ import numpy as np
 from random import randint
 import colorsys
 from ColoredLines import main as Lines
+from musicMode import main as music
+from competitiveMode import main as comp
 from window_info import *
 import math
 
@@ -12,6 +14,7 @@ def empty(live):
 
 
 def drawButtons(number, margin):
+    global modes
     global titlefeed
     global mouseX
     global mouseY
@@ -19,6 +22,12 @@ def drawButtons(number, margin):
     height = int((hgt - 350 - margin * (number + 1)) / number)
     top = 350 + margin
     temp = titlefeed.copy()
+    if (live):
+        modes = [("practice", (0, 0, 255), Lines), ("competitive", (0, 210, 0), comp),
+         ("back end", (255, 0, 0), empty)]
+    elif (not live):
+        modes = [("lines", (0, 0, 255), Lines), ("identifier", (0, 210, 0), empty),
+                 ("musical", (255, 0, 0), music)]
     for i in range(number):
         blur = titlefeed[top: top + height, margin:wid - margin, :]
         blur = cv2.blur(blur, (75, 75))
@@ -180,8 +189,8 @@ cam = cv2.VideoCapture(0)
 titlefont = cv2.FONT_HERSHEY_DUPLEX
 hue = 0
 _, titlefeed = cam.read()
-modes = [("practice", (0, 0, 255), Lines), ("training", (0, 210, 0), empty),
-         ("points", (255, 0, 0), empty)]  # name,bgr,method
+modes = [("practice", (0, 0, 255), Lines), ("competitive", (0, 210, 0), comp),
+         ("back end", (255, 0, 0), empty)]  # name,bgr,method
 
 cv2.imshow(prgmName, titlefeed)
 cv2.setMouseCallback(prgmName, mouse)
