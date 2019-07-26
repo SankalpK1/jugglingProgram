@@ -35,6 +35,8 @@ yVelocityPrev = []
 
 numThrown = 0
 
+yHeight=300
+
 def main(live):
     cam = cv2.VideoCapture(0)
 
@@ -92,7 +94,7 @@ def main(live):
 
     yVelocityPrev = []
 
-    yHeight = 300
+    global yHeight
 
     isAbove = []
 
@@ -136,7 +138,7 @@ def main(live):
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
         cv2.imshow(prgmName, img)
         cv2.setMouseCallback(prgmName, onmouse)
-        cv2.waitKey(10)
+
         ch = chr(0xFF & cv2.waitKey(5))
         if ch == 'q':
             return
@@ -165,7 +167,16 @@ def main(live):
         else:
             return 0
 
+    def heightsel(event, x, y, flags, param):
+        global yHeight
+        if event == cv2.EVENT_LBUTTONDOWN:
+            yHeight=y
+            print("sfsfgdsgssdsdgsdgsdsdgddssdgdsf")
+
+    cv2.setMouseCallback(prgmName,heightsel)
+
     while True:
+
         _,imgCam=cam.read()
         imgCam=cv2.resize(imgCam,(hgt,wid))
         imgCam=cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
@@ -253,7 +264,8 @@ def main(live):
         #     mask=cv2.bitwise_or(mask,threshold)
         #
         # maskedimg=cv2.bitwise_and(img,img,mask=mask)
-        cv2.line(img, (0, yHeight), (563, yHeight), (0, 255, 0))
+        cv2.line(img, (0, yHeight), (wid, yHeight), (0, 255, 0))
+        cv2.putText(img,"click to move line",(10,50),cv2.FONT_HERSHEY_DUPLEX,.7,(255,255,255),2)
         cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
