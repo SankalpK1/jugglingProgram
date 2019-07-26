@@ -215,10 +215,10 @@ def main(live):
                             totalVelocityPrev = math.sqrt(xVelocityPrev[values]*xVelocityPrev[values] + yVelocityPrev[values]*yVelocityPrev[values])
                             totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
                             velocityAngle = math.atan2(float(yVelocity[values]), float(xVelocity[values]))
-                            if (positions[values][frameNum[values]][0]>int(wid/2)):
-                                sock1.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50 + 200 * values) + ';' + (str(totalVelocity/10) + ';')).encode())
-                            elif (positions[values][frameNum[values]][0]<int(wid/2)):
-                                sock2.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50 + 200 * values) + ';' + (str(totalVelocity/10) + ';')).encode())
+                            if (positions[values][frameNum[values]][0]>int(wid/2) and (frameNum[values] + (values+1)*20)%(20*values) == 0):
+                                sock1.sendall((str(positions[values][frameNum[values]][1] + 200 * values) + ' ' + (str(totalVelocity/10) + ';')).encode())
+                            elif (positions[values][frameNum[values]][0]<int(wid/2) and (frameNum[values] + (values+1)*20)%(20*values) == 0):
+                                sock2.sendall((str(positions[values][frameNum[values]][1] + 200 * values) + ' ' + (str(totalVelocity/10) + ';')).encode())
                             # (height, width, depth) = img.shape
                             # nonImage = np.zeros((height, width, depth), np.uint8)
                             # # print (xVelocity[values])
@@ -271,6 +271,8 @@ def main(live):
         cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
+            sock1.sendall('00;'.encode())
+            sock2.sendall('00;'.encode())
             break
 
 
