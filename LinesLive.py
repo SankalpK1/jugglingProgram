@@ -36,9 +36,11 @@ yVelocityPrev = []
 numThrown = 0
 timestamp=0
 check=False
+cpts=[]
 
 def main():
     global timestamp
+    global cpts
     global cam
     global check
     global img
@@ -103,7 +105,9 @@ def main():
     def onmouse(event, x, y, flags, param):
         global numBalls
         global numClicked
+        global cpts
         if event == cv2.EVENT_LBUTTONDOWN:
+            cpts.append((x,y))
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             (h,s,v) = cv2.split(img2)
             print(h[y][x])
@@ -130,22 +134,55 @@ def main():
                 xVelocityPrev.append(0)
                 yVelocityPrev.append(0)
                 isAbove.append(0)
+    _, drawn = cam.read()
+    drawn = cv2.resize(drawn, (hgt, wid))
+    drawn = cv2.rotate(drawn, cv2.ROTATE_90_CLOCKWISE)
     while True:
         if numClicked < 1:
-            _, img = cam.read()
+            cpts.clear()
+            __,img = cam.read()
 
-
-            img = cv2.resize(img, (hgt//2, wid//2)) #test
-            img = cv2.resize(img, (hgt, wid))
-
+            img = cv2.resize(img, (hgt,wid))
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-        cv2.imshow(prgmName, img)
+            drawn = img.copy()
+            cv2.putText(drawn, "click a ball to begin selection", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0),
+                        5)
+            cv2.putText(drawn, "or hit space to continue", (10, 90), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0),
+                        5)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (0, 0, 0), 5)
+            cv2.putText(drawn, "click a ball to begin selection", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(drawn, "or hit space to continue", (10, 90), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255),
+                        2)
+            cv2.putText(drawn,"balls selected: "+str(numBalls),(10,hgt-50),cv2.FONT_HERSHEY_DUPLEX,1,(255,255,255),2)
+        else:
+            drawn=img.copy()
+            cv2.putText(drawn, "click the ball 2 more times", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (0, 0, 0), 5)
+            cv2.putText(drawn, "click the ball 2 more times", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (255, 255, 255), 2)
+            for pt in cpts:
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1]-3), (pt[0]+1, pt[1] - 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1]+3), (pt[0]+1, pt[1] +7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] -7, pt[1] +1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] +3, pt[1] -1), (pt[0] + 7, pt[1]+1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1]-3), (pt[0]+1, pt[1] - 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1]+3), (pt[0]+1, pt[1] +7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] -7, pt[1] +1), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] +3, pt[1] -1), (pt[0] + 7, pt[1]+1), (255, 255, 255), -1)
+
+
+        cv2.imshow(prgmName, drawn)
         cv2.setMouseCallback(prgmName, onmouse)
+        # img=drawn.copy()
+
 
         ch = chr(0xFF & cv2.waitKey(5))
         if ch == 'q':
             return
-        elif ch ==' ':
+        elif ch ==' ' and numClicked <1:
             break
 
 

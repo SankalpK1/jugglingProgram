@@ -7,6 +7,7 @@ from musicMode import main as music
 from competitiveMode import main as comp
 from window_info import *
 import math
+from BackEndMode import main as back
 
 
 def empty(live):
@@ -24,7 +25,7 @@ def drawButtons(number, margin):
     temp = titlefeed.copy()
     if (live):
         modes = [("practice", (0, 0, 255), Lines), ("competitive", (0, 210, 0), comp),
-         ("back end", (255, 0, 0), empty)]
+         ("back end", (255, 0, 0), back)]
     elif (not live):
         modes = [("lines", (0, 0, 255), Lines), ("identifier", (0, 210, 0), empty),
                  ("musical", (255, 0, 0), music)]

@@ -36,6 +36,7 @@ speed=65
 numThrown = 0
 timestamp=0
 check=False
+cpts=[]
 play=True
 def main():
     global speed
@@ -101,7 +102,7 @@ def main():
     yHeight = 300
 
     isAbove = []
-
+    global cpts
 
 
 
@@ -109,8 +110,10 @@ def main():
     numThrown = 0
     def onmouse(event, x, y, flags, param):
         global numBalls
+        global cpts
         global numClicked
         if event == cv2.EVENT_LBUTTONDOWN:
+            cpts.append((x,y))
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             (h,s,v) = cv2.split(img2)
             print(h[y][x])
@@ -140,18 +143,51 @@ def main():
 
     _, img = cam.read()
     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    drawn=img.copy()
     while True:
         if numClicked < 1:
-            img = cv2.resize(img, (wid, hgt))
+            cpts.clear()
+            img = cv2.resize(img, (wid,hgt))
+
+            drawn = img.copy()
+            cv2.putText(drawn, "click a ball to begin selection", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0),
+                        5)
+            cv2.putText(drawn, "or hit space to continue", (10, 90), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0),
+                        5)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (0, 0, 0), 5)
+            cv2.putText(drawn, "click a ball to begin selection", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(drawn, "or hit space to continue", (10, 90), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255),
+                        2)
+            cv2.putText(drawn,"balls selected: "+str(numBalls),(10,hgt-50),cv2.FONT_HERSHEY_DUPLEX,1,(255,255,255),2)
+        else:
+            drawn=img.copy()
+            cv2.putText(drawn, "click the ball 2 more times", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (0, 0, 0), 5)
+            cv2.putText(drawn, "click the ball 2 more times", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (255, 255, 255), 2)
+            for pt in cpts:
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1]-3), (pt[0]+1, pt[1] - 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1]+3), (pt[0]+1, pt[1] +7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] -7, pt[1] +1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] +3, pt[1] -1), (pt[0] + 7, pt[1]+1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1]-3), (pt[0]+1, pt[1] - 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1]+3), (pt[0]+1, pt[1] +7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] -7, pt[1] +1), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] +3, pt[1] -1), (pt[0] + 7, pt[1]+1), (255, 255, 255), -1)
 
 
-        cv2.imshow(prgmName, img)
+        cv2.imshow(prgmName, drawn)
         cv2.setMouseCallback(prgmName, onmouse)
+        # img=drawn.copy()
+
 
         ch = chr(0xFF & cv2.waitKey(5))
         if ch == 'q':
             return
-        elif ch ==' ':
+        elif ch ==' ' and numClicked <1:
             break
 
 
@@ -180,13 +216,27 @@ def main():
     ret = True
     _,imgCam=cam.read()
     black=np.zeros((hgt,wid,3),np.uint8)
-    cv2.putText(black,"loading...",(10,100),cv2.FONT_HERSHEY_DUPLEX,3,(255,255,255),5)
+    cv2.putText(black,"processing...",(10,100),cv2.FONT_HERSHEY_DUPLEX,2.5,(255,255,255),5)
     cv2.imshow(prgmName,black)
 
+    zev=cv2.VideoCapture("loading.mp4")
+    fr=0
     while ret:
-
-
-        print(ret)
+        fr+=1
+        loop,load=zev.read()
+        if not loop:
+            zev.set(cv2.CAP_PROP_POS_FRAMES,0)
+            loop,load=zev.read()
+        load=cv2.rotate(load,cv2.ROTATE_90_CLOCKWISE)
+        black[200:920,(wid-480)//2:(wid-480)//2+480,:]=load
+        prog=fr/int(cam.get(cv2.CAP_PROP_FRAME_COUNT))*(wid-100)+50
+        print(fr/int(cam.get(cv2.CAP_PROP_FRAME_COUNT)))
+        cv2.rectangle(black,(50,140),(int(prog*1.02),180),(255,255,255),-1)
+        cv2.rectangle(black, (50, 140), (wid-50, 180),
+                      (255, 255, 255),2)
+        cv2.rectangle(black,(wid-50+2,140),(wid,180),(0,0,0),-1)
+        cv2.imshow(prgmName,black)
+        # print(ret)
         if not ret: break
         # imgCam=cv2.resize(imgCam,(int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT)),int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))))
         imgCam=cv2.resize(imgCam,(hgt,wid))
