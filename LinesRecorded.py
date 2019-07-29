@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-import math
-import colorsys
+# import math
+# import colorsys
 from window_info import *
 
 
@@ -73,7 +73,8 @@ def main():
 
     global numThrown
 
-    cam = cv2.VideoCapture("bettezev.mp4")
+
+    cam = cv2.VideoCapture("hopefully.mp4")
 
     frameNum = []
 
@@ -160,7 +161,7 @@ def main():
             cv2.putText(drawn, "or hit space to continue", (10, 90), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255),
                         2)
             cv2.putText(drawn,"balls selected: "+str(numBalls),(10,hgt-50),cv2.FONT_HERSHEY_DUPLEX,1,(255,255,255),2)
-        else:
+        elif numClicked<2:
             drawn=img.copy()
             cv2.putText(drawn, "click the ball 2 more times", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5)
             cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
@@ -177,7 +178,23 @@ def main():
                 cv2.rectangle(drawn, (pt[0] - 1, pt[1]+3), (pt[0]+1, pt[1] +7), (255, 255, 255), -1)
                 cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] -7, pt[1] +1), (255, 255, 255), -1)
                 cv2.rectangle(drawn, (pt[0] +3, pt[1] -1), (pt[0] + 7, pt[1]+1), (255, 255, 255), -1)
-
+        else:
+            drawn = img.copy()
+            cv2.putText(drawn, "click the ball 1 more time", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (0, 0, 0), 5)
+            cv2.putText(drawn, "click the ball 1 more time", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (255, 255, 255), 2)
+            for pt in cpts:
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] - 3), (pt[0] + 1, pt[1] - 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] + 3), (pt[0] + 1, pt[1] + 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] - 7, pt[1] + 1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] + 3, pt[1] - 1), (pt[0] + 7, pt[1] + 1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] - 3), (pt[0] + 1, pt[1] - 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] + 3), (pt[0] + 1, pt[1] + 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] - 7, pt[1] + 1), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] + 3, pt[1] - 1), (pt[0] + 7, pt[1] + 1), (255, 255, 255), -1)
 
         cv2.imshow(prgmName, drawn)
         cv2.setMouseCallback(prgmName, onmouse)
@@ -253,7 +270,7 @@ def main():
             # hsv_filtered = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
             # hsv_filtered2 = cv2.GaussianBlur(hsv_filtered, (17,17), 0)
             threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3 * values]),
-                                          (satValLower(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 50),
+                                          (satValLower(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 30),
                                     (hueUpper(hsv_values2[values][0], hsv_ranges[3 * values]),
                                      (satValUpper(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 225))
             threshold_filtered = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
@@ -270,7 +287,17 @@ def main():
                         # cv2.ellipse(img, ellipse, (0, 255, 0), 2)
                         # cv2.circle(img, (int((int(ellipse[0][1])+int(ellipse[1][1]))/2), int((int(ellipse[0][0])+int(ellipse[1][0]))/2)), 20, (255, 255, 255))
                         # cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 20, (255, 255, 255))
-                        positions[values].append([int(ellipse[0][0]), int(ellipse[0][1])])
+
+                        print(positions)
+                        if len(positions[0])>numBalls*2:
+                            prev=positions[values][-1]
+                            preprev=positions[values][-2]
+                            # print(prev,"    ",(int(ellipse[0][0]), int(ellipse[0][1])))
+                            positions[values].append([int((ellipse[0][0]+prev[0]+preprev[0])//3), int((ellipse[0][1]+prev[1]+preprev[1])//3)])
+                            # print (positions[values])
+                        else:
+                            positions[values].append([int(ellipse[0][0]), int(ellipse[0][1])])
+
                         frameNum[values] += 1
                         if frameNum[values] >= 2:
                             # xVelocityPrev[values] = positions[values][frameNum[values]-1][0] - positions[values][frameNum[values]-2][0]

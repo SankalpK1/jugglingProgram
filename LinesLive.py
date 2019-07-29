@@ -155,8 +155,8 @@ def main():
             cv2.putText(drawn, "or hit space to continue", (10, 90), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255),
                         2)
             cv2.putText(drawn,"balls selected: "+str(numBalls),(10,hgt-50),cv2.FONT_HERSHEY_DUPLEX,1,(255,255,255),2)
-        else:
-            drawn=img.copy()
+        elif numClicked < 2:
+            drawn = img.copy()
             cv2.putText(drawn, "click the ball 2 more times", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5)
             cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 0, 0), 5)
@@ -164,14 +164,31 @@ def main():
             cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
                         (255, 255, 255), 2)
             for pt in cpts:
-                cv2.rectangle(drawn, (pt[0] - 1, pt[1]-3), (pt[0]+1, pt[1] - 7), (0, 0, 0), 2)
-                cv2.rectangle(drawn, (pt[0] - 1, pt[1]+3), (pt[0]+1, pt[1] +7), (0, 0, 0), 2)
-                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] -7, pt[1] +1), (0, 0, 0), 2)
-                cv2.rectangle(drawn, (pt[0] +3, pt[1] -1), (pt[0] + 7, pt[1]+1), (0, 0, 0), 2)
-                cv2.rectangle(drawn, (pt[0] - 1, pt[1]-3), (pt[0]+1, pt[1] - 7), (255, 255, 255), -1)
-                cv2.rectangle(drawn, (pt[0] - 1, pt[1]+3), (pt[0]+1, pt[1] +7), (255, 255, 255), -1)
-                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] -7, pt[1] +1), (255, 255, 255), -1)
-                cv2.rectangle(drawn, (pt[0] +3, pt[1] -1), (pt[0] + 7, pt[1]+1), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] - 3), (pt[0] + 1, pt[1] - 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] + 3), (pt[0] + 1, pt[1] + 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] - 7, pt[1] + 1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] + 3, pt[1] - 1), (pt[0] + 7, pt[1] + 1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] - 3), (pt[0] + 1, pt[1] - 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] + 3), (pt[0] + 1, pt[1] + 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] - 7, pt[1] + 1), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] + 3, pt[1] - 1), (pt[0] + 7, pt[1] + 1), (255, 255, 255), -1)
+        else:
+            drawn = img.copy()
+            cv2.putText(drawn, "click the ball 1 more time", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (0, 0, 0), 5)
+            cv2.putText(drawn, "click the ball 1 more time", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (255, 255, 255), 2)
+            for pt in cpts:
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] - 3), (pt[0] + 1, pt[1] - 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] + 3), (pt[0] + 1, pt[1] + 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] - 7, pt[1] + 1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] + 3, pt[1] - 1), (pt[0] + 7, pt[1] + 1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] - 3), (pt[0] + 1, pt[1] - 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] + 3), (pt[0] + 1, pt[1] + 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] - 7, pt[1] + 1), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] + 3, pt[1] - 1), (pt[0] + 7, pt[1] + 1), (255, 255, 255), -1)
 
 
         cv2.imshow(prgmName, drawn)

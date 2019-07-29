@@ -54,7 +54,6 @@ def drawButtons(number, margin):
         top += height + margin
 
     titlefeed = cv2.addWeighted(temp, .7, titlefeed, .3, 0)
-    titlefeed = cv2.addWeighted(temp, .7, titlefeed, .3, 0)
 
     top = 350 + margin
     for i in range(number):
