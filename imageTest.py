@@ -172,10 +172,10 @@ def main(live):
             return int (satVal)-range*(3/4)-2
         else:
             return 0
-
-    _, imgCam = cam.read()
     while True:
+        _, imgCam = cam.read()
         imgCam=cv2.resize(imgCam,(hgt,wid))
+        imgCam = cv2.resize(imgCam, (0, 0), None, .25, .25)
         imgCam=cv2.rotate(imgCam, cv2.ROTATE_90_CLOCKWISE)
         hsv=cv2.cvtColor(imgCam,cv2.COLOR_BGR2HSV)
         img = imgCam
@@ -198,85 +198,75 @@ def main(live):
                 for i in range(len(contrs)):
                     if len(contrs[i]) >= 5:
                         existsLine = 1
-                        img3 = img
-                        hsv_filtered = cv2.morphologyEx(img3, cv2.MORPH_OPEN, kernel)
-                        cv2.drawContours(hsv_filtered, contrs, -1, (150, 10, 255), 3)
+                        img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+                        backEndImg = img
+                        cv2.drawContours(backEndImg, contrs, -1, (150, 10, 255), 3)
                         ellipse = cv2.fitEllipse(contrs[i])
-                        # cv2.ellipse(img, ellipse, (0, 255, 0), 2)
-                        # cv2.circle(img, (int((int(ellipse[0][1])+int(ellipse[1][1]))/2), int((int(ellipse[0][0])+int(ellipse[1][0]))/2)), 20, (255, 255, 255))
-                        # cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 20, (255, 255, 255))
+                        cv2.ellipse(backEndImg, ellipse, (0, 255, 0), 2)
+                        cv2.circle(backEndImg, (int(ellipse[0][0]), int(ellipse[0][1])), 10, (255, 255, 255))
                         positions[values].append([int(ellipse[0][0]), int(ellipse[0][1])])
                         frameNum[values] += 1
                         if frameNum[values] >= 2:
-                            xVelocityPrev[values] = positions[values][frameNum[values]-1][0] - positions[values][frameNum[values]-2][0]
-                            xVelocity[values] = positions[values][frameNum[values]][0] - positions[values][frameNum[values] - 1][0]
-                            yVelocityPrev[values] = positions[values][frameNum[values] - 1][1] - positions[values][frameNum[values] - 2][1]
-                            yVelocity[values] = positions[values][frameNum[values]][1] - positions[values][frameNum[values] - 1][1]
-                            totalVelocityPrev = math.sqrt(xVelocityPrev[values]*xVelocityPrev[values] + yVelocityPrev[values]*yVelocityPrev[values])
-                            totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
-                            velocityAngle = math.atan2(float(yVelocity[values]), float(xVelocity[values]))
-                            if (positions[values][frameNum[values]][0]>int(wid/2) and (frameNum[values] + (values+1)*20)%20 == 0):
-                                sock1.sendall((str(positions[values][frameNum[values]][1] + 200 * values) + '; ' + (str(totalVelocity/10) + ';')).encode())
-                            elif (positions[values][frameNum[values]][0]<int(wid/2) and (frameNum[values] + (values+1)*20)%20 == 0):
-                                sock2.sendall((str(positions[values][frameNum[values]][1] + 200 * values) + '; ' + (str(totalVelocity/10) + ';')).encode())
-                            # (height, width, depth) = img.shape
-                            # nonImage = np.zeros((height, width, depth), np.uint8)
+                            (height, width, depth) = img.shape
+                            nonImage = np.zeros((height, width, depth), np.uint8)
                             # # print (xVelocity[values])
                             # if yVelocity[values] < 0 and yVelocityPrev[values] > 0:
                             # print (isAbove[values])
-                        #     if (positions[values][frameNum[values]][1]>yHeight and isAbove[values] == 1):
-                        #         isAbove[values] = 0
-                        #     if (positions[values][frameNum[values]][1]<yHeight and isAbove[values] == 0):
-                        #         numThrown+=1
-                        #         isAbove[values] = 1
-                        #         print (numThrown)
-                        #     for j in range(2, frameNum[values]):
-                        #         lineColor = np.uint8(
-                        #             [[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
-                        #         #
-                        #         # print(cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)[0][0][0])
-                        #         bgrColor = cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)
-                        #         actualbgr = bgrColor[0][0]
-                        #         aaa = tuple([int(x) for x in actualbgr])
-                        #         cv2.line(nonImage, (positions[values][j - 1][0], positions[values][j - 1][1]),
-                        #                  (positions[values][j][0], positions[values][j][1]),
-                        #                 aaa , thickness=5)
-                        #     fakeImage = cv2.addWeighted(fakeImage, 1, nonImage, 1/3, 0)
-                        # break
-            # if existsLine == 0:
-            #     if frameNum[values] >= 2:
-            #         (height, width, depth) = img.shape
-            #         nonImage = np.zeros((height, width, depth), np.uint8)
-            #         for j in range(2, frameNum[values]):
-            #             lineColor = np.uint8(
-            #                 [[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
-            #             #
-            #             # print(cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)[0][0][0])
-            #             bgrColor = cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)
-            #             actualbgr = bgrColor[0][0]
-            #             aaa = tuple([int(x) for x in actualbgr])
-            #             cv2.line(nonImage, (positions[values][j - 1][0], positions[values][j - 1][1]),
-            #                      (positions[values][j][0], positions[values][j][1]),
-            #                      aaa, thickness=5)
-            #         fakeImage = cv2.addWeighted(fakeImage, 1, nonImage, 1 / 3, 0)
-        # img = cv2.addWeighted(fakeImage, 0.9, imgCam, 0.1, 100)
+                            if (positions[values][frameNum[values]][1]>yHeight and isAbove[values] == 1):
+                                isAbove[values] = 0
+                            if (positions[values][frameNum[values]][1]<yHeight and isAbove[values] == 0):
+                                numThrown+=1
+                                isAbove[values] = 1
+                                print (numThrown)
+                            for j in range(2, frameNum[values]):
+                                lineColor = np.uint8(
+                                    [[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
+                                #
+                                # print(cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)[0][0][0])
+                                bgrColor = cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)
+                                actualbgr = bgrColor[0][0]
+                                aaa = tuple([int(x) for x in actualbgr])
+                                cv2.line(nonImage, (positions[values][j - 1][0], positions[values][j - 1][1]),
+                                         (positions[values][j][0], positions[values][j][1]),
+                                        aaa , thickness=5)
+                            fakeImage = cv2.addWeighted(fakeImage, 1, nonImage, 1/3, 0)
+                        break
+            if existsLine == 0:
+                if frameNum[values] >= 2:
+                    (height, width, depth) = img.shape
+                    nonImage = np.zeros((height, width, depth), np.uint8)
+                    for j in range(2, frameNum[values]):
+                        lineColor = np.uint8(
+                            [[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
+                        #
+                        # print(cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)[0][0][0])
+                        bgrColor = cv2.cvtColor(lineColor, cv2.COLOR_HSV2BGR)
+                        actualbgr = bgrColor[0][0]
+                        aaa = tuple([int(x) for x in actualbgr])
+                        cv2.line(nonImage, (positions[values][j - 1][0], positions[values][j - 1][1]),
+                                 (positions[values][j][0], positions[values][j][1]),
+                                 aaa, thickness=5)
+                    fakeImage = cv2.addWeighted(fakeImage, 1, nonImage, 1 / 3, 0)
+
+            mask = cv2.bitwise_or(mask, threshold)
+        img = cv2.addWeighted(fakeImage, 0.9, imgCam, 0.1, 100)
                     # else:
                     #     # optional to "delete" the small contours
                     #     cv2.drawContours(img, contrs, -1,  (0, 0, 0), -1)1
         #     cv2.drawContours(img, contrs, -1, (0, 255, 0), 3)
-        #     mask=cv2.bitwise_or(mask,threshold)
         #
-        # maskedimg=cv2.bitwise_and(img,img,mask=mask)
+        maskedimg = cv2.bitwise_and(img,img,mask=mask)
 
-        cv2.imshow(prgmName, img)
+        imgLeft = np.vstack((imgCam, maskedimg))
+        imgRight = np.vstack((backEndImg, img))
+        imgFull = np.hstack((imgLeft, imgRight))
+        cv2.imshow(prgmName, imgFull)
+
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
-            sock1.sendall('00;'.encode())
-            sock2.sendall('00;'.encode())
             break
 
 
 
     #RGB code:	R: 175 G: 15 B: 17
     # HSV:	359.25° 91.43% 68.63%
-    main(0)
