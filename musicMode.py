@@ -106,6 +106,11 @@ def main(live):
     isAbove = []
 
     numThrown = 0
+
+    musicSend = [[1, 0, 0, 0],
+                 [0, 1, 0, 0],
+                 [0, 0, 1, 0],
+                 [0, 0, 0, 1]]
     def onmouse(event, x, y, flags, param):
         global numBalls
         global numClicked
@@ -271,10 +276,28 @@ def main(live):
                             totalVelocityPrev = math.sqrt(xVelocityPrev[values]*xVelocityPrev[values] + yVelocityPrev[values]*yVelocityPrev[values])
                             totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
                             velocityAngle = math.atan2(float(yVelocity[values]), float(xVelocity[values]))
-                            if (positions[values][frameNum[values]][0]>int(wid/2) and (frameNum[values] + (values+1)*20)%(20*values) == 0):
-                                sock1.sendall((str(positions[values][frameNum[values]][1] + 200 * values) + ' ' + (str(totalVelocity/10) + ';')).encode())
-                            elif (positions[values][frameNum[values]][0]<int(wid/2) and (frameNum[values] + (values+1)*20)%(20*values) == 0):
-                                sock2.sendall((str(positions[values][frameNum[values]][1] + 200 * values) + ' ' + (str(totalVelocity/10) + ';')).encode())
+                            if (positions[values][frameNum[values]][0]>int(wid/2) and (frameNum[values] + (values+1)*50)%50*numBalls == 0):
+                                sock1.sendall((str(
+                                    positions[values][frameNum[values]][1] + 200 * values * musicSend[values][
+                                        0]) + ' ' + str(
+                                    positions[values][frameNum[values]][1] + 200 * values * musicSend[values][
+                                        1]) + ' ' + str(
+                                    positions[values][frameNum[values]][1] + 200 * values * musicSend[values][
+                                        2]) + ' ' +
+                                               str(positions[values][frameNum[values]][1] + 200 * values *
+                                                   musicSend[values][3]) + ' ' + (
+                                                       str(float(totalVelocity) / 10) + ';')).encode())
+                                print (totalVelocity)
+                            elif (positions[values][frameNum[values]][0]<int(wid/2) and (frameNum[values] + (values+1)*50)%50*numBalls == 0):
+                                print (totalVelocity)
+                                sock1.sendall((str(
+                                    positions[values][frameNum[values]][1] + 200 * values * musicSend[values][
+                                        0]) + ' ' + str(
+                                    positions[values][frameNum[values]][1] + 200 * values * musicSend[values][
+                                        1]) + ' ' + str(
+                                    positions[values][frameNum[values]][1] + 200 * values * musicSend[values][2]) + ' ' +
+                                               str(positions[values][frameNum[values]][1] + 200 * values * musicSend[values][3]) + ' ' + (
+                                    str(float(totalVelocity) / 10) + ';')).encode())
                             # (height, width, depth) = img.shape
                             # nonImage = np.zeros((height, width, depth), np.uint8)
                             # # print (xVelocity[values])
@@ -327,8 +350,8 @@ def main(live):
         cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
-            sock1.sendall('00;'.encode())
-            sock2.sendall('00;'.encode())
+            sock1.sendall('00 00 00 00 00;'.encode())
+            sock2.sendall('00 00 00 00 00;'.encode())
             break
 
 
