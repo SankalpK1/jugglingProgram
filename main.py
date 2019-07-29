@@ -5,6 +5,7 @@ import colorsys
 from ColoredLines import main as Lines
 from musicMode import main as music
 from competitiveMode import main as comp
+from BackEndMode import main as back
 from window_info import *
 import math
 from BackEndMode import main as back
@@ -52,6 +53,7 @@ def drawButtons(number, margin):
 
         top += height + margin
 
+    titlefeed = cv2.addWeighted(temp, .7, titlefeed, .3, 0)
     titlefeed = cv2.addWeighted(temp, .7, titlefeed, .3, 0)
 
     top = 350 + margin
@@ -191,7 +193,7 @@ titlefont = cv2.FONT_HERSHEY_DUPLEX
 hue = 0
 _, titlefeed = cam.read()
 modes = [("practice", (0, 0, 255), Lines), ("competitive", (0, 210, 0), comp),
-         ("back end", (255, 0, 0), empty)]  # name,bgr,method
+         ("back end", (255, 0, 0), back)]  # name,bgr,method
 
 cv2.imshow(prgmName, titlefeed)
 cv2.setMouseCallback(prgmName, mouse)

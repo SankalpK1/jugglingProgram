@@ -227,9 +227,10 @@ def main(live):
             kernel = np.ones((3, 3), np.uint8)
             # hsv_filtered = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
             # hsv_filtered2 = cv2.GaussianBlur(hsv_filtered, (17,17), 0)
-            threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3*values]),
-                                                    (satValLower(hsv_values2[values][1], hsv_ranges[3*values+1])), 50),
-                                                       (hueUpper(hsv_values2[values][0], hsv_ranges[3*values]),(satValUpper(hsv_values2[values][1],  hsv_ranges[3*values+1])), 255))
+            threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3 * values]),
+                                          (satValLower(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 50),
+                                    (hueUpper(hsv_values2[values][0], hsv_ranges[3 * values]),
+                                     (satValUpper(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 225))
             threshold_filtered = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
             existsLine = 0
             contrs, hier = cv2.findContours(threshold_filtered, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -254,10 +255,10 @@ def main(live):
                             totalVelocityPrev = math.sqrt(xVelocityPrev[values]*xVelocityPrev[values] + yVelocityPrev[values]*yVelocityPrev[values])
                             totalVelocity = math.sqrt(xVelocity[values] * xVelocity[values] + yVelocity[values] * yVelocity[values])
                             velocityAngle = math.atan2(float(yVelocity[values]), float(xVelocity[values]))
-                            if (positions[values][frameNum[values]][0]>int(wid/2)):
-                                sock1.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50) + ';' + (str(totalVelocity/10) + ';')).encode())
-                            elif (positions[values][frameNum[values]][0]<int(wid/2)):
-                                sock2.sendall((str(positions[values][frameNum[values]][1] + velocityAngle*50) + ';' + (str(totalVelocity/10) + ';')).encode())
+                            if (positions[values][frameNum[values]][0]>int(wid/2) and (frameNum[values] + (values+1)*20)%(20*values) == 0):
+                                sock1.sendall((str(positions[values][frameNum[values]][1] + 200 * values) + ' ' + (str(totalVelocity/10) + ';')).encode())
+                            elif (positions[values][frameNum[values]][0]<int(wid/2) and (frameNum[values] + (values+1)*20)%(20*values) == 0):
+                                sock2.sendall((str(positions[values][frameNum[values]][1] + 200 * values) + ' ' + (str(totalVelocity/10) + ';')).encode())
                             # (height, width, depth) = img.shape
                             # nonImage = np.zeros((height, width, depth), np.uint8)
                             # # print (xVelocity[values])
@@ -310,6 +311,8 @@ def main(live):
         cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
         if ch == 'q':
+            sock1.sendall('00;'.encode())
+            sock2.sendall('00;'.encode())
             break
 
 
