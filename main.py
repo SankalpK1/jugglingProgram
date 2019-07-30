@@ -25,7 +25,7 @@ def drawButtons(number, margin):
     top = 350 + margin
     temp = titlefeed.copy()
     if (live):
-        modes = [("practice", (0, 0, 255), Lines), ("competitive", (0, 210, 0), comp),
+        modes = [("practice", (0, 0, 255), Lines), ("challenge", (0, 210, 0), comp),
          ("back end", (255, 0, 0), back)]
     elif (not live):
         modes = [("lines", (0, 0, 255), Lines), ("identifier", (0, 210, 0), empty),
