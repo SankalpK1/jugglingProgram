@@ -4,7 +4,7 @@ from random import randint
 import colorsys
 from ColoredLines import main as Lines
 from musicMode import main as music
-from competitiveMode import main as comp
+from challengeMode import main as comp
 from BackEndMode import main as back
 from window_info import *
 import math
@@ -191,7 +191,7 @@ cam = cv2.VideoCapture(0)
 titlefont = cv2.FONT_HERSHEY_DUPLEX
 hue = 0
 _, titlefeed = cam.read()
-modes = [("practice", (0, 0, 255), Lines), ("competitive", (0, 210, 0), comp),
+modes = [("practice", (0, 0, 255), Lines), ("challenge", (0, 210, 0), comp),
          ("back end", (255, 0, 0), back)]  # name,bgr,method
 
 cv2.imshow(prgmName, titlefeed)

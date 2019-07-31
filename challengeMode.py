@@ -322,7 +322,7 @@ def main(live):
         #     mask=cv2.bitwise_or(mask,threshold)
         #
         # maskedimg=cv2.bitwise_and(img,img,mask=mask)
-        cv2.line(img, (0, yHeight), (wid, yHeight), (0, 255, 0))
+        cv2.line(img, (0, yHeight), (wid, yHeight), (0, 255, 0), thickness=16)
         cv2.putText(img,"click to move line",(10,50),cv2.FONT_HERSHEY_DUPLEX,.7,(255,255,255),2)
         cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))

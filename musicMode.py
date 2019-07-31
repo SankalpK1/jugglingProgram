@@ -44,7 +44,6 @@ port2 = 2344
 sock2.connect((host, port2))
 
 def main(live):
-    cam = cv2.VideoCapture(0)
 
     global img
 
@@ -74,8 +73,6 @@ def main(live):
     global yVelocityPrev
 
     global numThrown
-
-    cam = cv2.VideoCapture(0)
 
     frameNum = []
 
@@ -111,6 +108,35 @@ def main(live):
                  [0, 1, 0, 0],
                  [0, 0, 1, 0],
                  [0, 0, 0, 1]]
+
+    cap = cv2.VideoCapture(0)
+
+    # Define the codec and create VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
+    out = cv2.VideoWriter('output.avi', fourcc, 20.0, (hgt, wid))
+    # out = cv2.VideoWriter('output.avi', -1, 20.0, (640, 480))
+
+    while (cap.isOpened()):
+        ret, frame = cap.read()
+        if ret == True:
+            frame = cv2.resize(frame, (hgt, wid))
+
+            # write the flipped frame
+            out.write(frame)
+
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(1) & 0xFF == ord(' '):
+                break
+        else:
+            break
+
+    # Release everything if job is finished
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
+
+    cam = cv2.VideoCapture('output.avi')
+
     def onmouse(event, x, y, flags, param):
         global numBalls
         global numClicked
@@ -119,10 +145,10 @@ def main(live):
             cpts.append((x,y))
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             (h,s,v) = cv2.split(img2)
-            print(h[y][x])
+            # print(h[y][x])
             # print(countSelected)
             hsv_values.append([h[y][x],s[y][x],v[y][x]])
-            print (hsv_values)
+            # print (hsv_values)
             numClicked+=1
             if numClicked == 3:
                 numBalls+=1
@@ -144,16 +170,14 @@ def main(live):
                 yVelocityPrev.append(0)
                 isAbove.append(0)
 
-    _, drawn = cam.read()
-    drawn = cv2.resize(drawn, (hgt, wid))
-    drawn = cv2.rotate(drawn, cv2.ROTATE_90_CLOCKWISE)
+    _, img = cam.read()
+    img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    drawn = img.copy()
     while True:
         if numClicked < 1:
             cpts.clear()
-            __, img = cam.read()
+            img = cv2.resize(img, (wid, hgt))
 
-            img = cv2.resize(img, (hgt, wid))
-            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
             drawn = img.copy()
             cv2.putText(drawn, "click a ball to begin selection", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0),
                         5)
@@ -287,7 +311,7 @@ def main(live):
                                                str(positions[values][frameNum[values]][1] + 200 * values *
                                                    musicSend[values][3]) + ' ' + (
                                                        str(float(totalVelocity) / 10) + ';')).encode())
-                                print (totalVelocity)
+                                # print (totalVelocity)
                             elif (positions[values][frameNum[values]][0]<int(wid/2) and (frameNum[values] + (values+1)*50)%50*numBalls == 0):
                                 print (totalVelocity)
                                 sock1.sendall((str(
