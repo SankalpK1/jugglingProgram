@@ -290,13 +290,22 @@ def main(live):
                             # nonImage = np.zeros((height, width, depth), np.uint8)
                             # # print (xVelocity[values])
                             # if yVelocity[values] < 0 and yVelocityPrev[values] > 0:
-                            # print (isAbove[values])
+                            #     numThrown+=1
+                            #     print(numThrown)
                             if (positions[values][frameNum[values]][1]>yHeight and isAbove[values] == 1):
                                 isAbove[values] = 0
+                                print (isAbove[values])
                             if (positions[values][frameNum[values]][1]<yHeight and isAbove[values] == 0):
                                 numThrown+=1
                                 isAbove[values] = 1
-                                print (numThrown)
+                                print (positions[values][frameNum[values]][1])
+                                print (isAbove[values])
+                            if (numThrown == 1):
+                                cv2.putText(drawn, str(numThrown) + "Point!", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                                        (255, 255, 255), 2)
+                            if (numThrown != 1):
+                                cv2.putText(drawn, str(numThrown) + "Points!", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                                            (255, 255, 255), 2)
                         #     for j in range(2, frameNum[values]):
                         #         lineColor = np.uint8(
                         #             [[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])
@@ -334,7 +343,7 @@ def main(live):
         #     mask=cv2.bitwise_or(mask,threshold)
         #
         # maskedimg=cv2.bitwise_and(img,img,mask=mask)
-        cv2.line(img, (0, yHeight), (wid, yHeight), (0, 255, 0), thickness=16)
+        cv2.line(img, (0, yHeight), (wid, yHeight), (255, 255, 255), 4)
         cv2.putText(img,"click to move line",(10,50),cv2.FONT_HERSHEY_DUPLEX,.7,(255,255,255),2)
         cv2.imshow(prgmName, img)
         ch = chr(0xFF & cv2.waitKey(1))
