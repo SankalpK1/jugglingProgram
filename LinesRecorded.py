@@ -74,15 +74,22 @@ def main():
     global numThrown
 
     camVid = cv2.VideoCapture('Countdown.mp4')
+    webCam = cv2.VideoCapture(0)
 
     while camVid.isOpened():
         ret, countImg = camVid.read()
+        _, overlay = webCam.read()
+        overlay = cv2.resize(overlay, (hgt, wid))
+        overlay = cv2.rotate(overlay, cv2.ROTATE_90_CLOCKWISE)
         if countImg is None:
             break
-        cv2.imshow(prgmName, countImg)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        countImg = cv2.resize(countImg, (wid, hgt))
+        finalImg = cv2.addWeighted(countImg, 0.5, overlay, 0.5, 0)
+        cv2.imshow(prgmName, finalImg)
+        if cv2.waitKey(10) & 0xFF == ord('q'):
             break
     camVid.release()
+    webCam.release()
     cv2.destroyAllWindows()
 
     cap = cv2.VideoCapture(0)
@@ -154,10 +161,10 @@ def main():
             cpts.append((x,y))
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             (h,s,v) = cv2.split(img2)
-            print(h[y][x])
+            # print(h[y][x])
             # print(countSelected)
             hsv_values.append([h[y][x],s[y][x],v[y][x]])
-            print (hsv_values)
+            # print (hsv_values)
             numClicked+=1
             if numClicked == 3:
                 numBalls+=1
@@ -283,7 +290,7 @@ def main():
         load=cv2.rotate(load,cv2.ROTATE_90_CLOCKWISE)
         black[200:920,(wid-480)//2:(wid-480)//2+480,:]=load
         prog=fr/int(cam.get(cv2.CAP_PROP_FRAME_COUNT))*(wid-100)+50
-        print(fr/int(cam.get(cv2.CAP_PROP_FRAME_COUNT)))
+        # print(fr/int(cam.get(cv2.CAP_PROP_FRAME_COUNT)))
         cv2.rectangle(black,(50,140),(int(prog*1.02),180),(255,255,255),-1)
         cv2.rectangle(black, (50, 140), (wid-50, 180),
                       (255, 255, 255),2)
@@ -324,7 +331,7 @@ def main():
                         # cv2.circle(img, (int((int(ellipse[0][1])+int(ellipse[1][1]))/2), int((int(ellipse[0][0])+int(ellipse[1][0]))/2)), 20, (255, 255, 255))
                         # cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 20, (255, 255, 255))
 
-                        print(positions)
+                        # print(positions)
                         if len(positions[0])>numBalls*2:
                             prev=positions[values][-1]
                             preprev=positions[values][-2]
@@ -352,7 +359,7 @@ def main():
                             if (positions[values][frameNum[values]][1]<yHeight and isAbove[values] == 0):
                                 numThrown+=1
                                 isAbove[values] = 1
-                                print (numThrown)
+                                # print (numThrown)
                             for j in range(2, frameNum[values]):
                                 lineColor = np.uint8(
                                     [[[hsv_values2[values][0], hsv_values2[values][1], hsv_values2[values][2]]]])

@@ -48,8 +48,7 @@ def drawButtons(number, margin):
         elif r < 0:
             r = 0
         cv2.rectangle(temp, pt1, pt2,
-                      (b, g, r) if mouseX <= pt2[0] and mouseX >= pt1[0] and mouseY <= pt2[1] and mouseY >= pt1[
-                          1] else (255, 255, 255), -1)
+                      (b, g, r) if mouseX <= pt2[0] and mouseX >= pt1[0] and mouseY <= pt2[1] and mouseY >= pt1[1] else (255, 255, 255), -1)
 
         top += height + margin
 
@@ -216,7 +215,7 @@ while True:
 
     prgm = processClick(numModes, margin)
     if prgm >= 0:
-        print("ran ", modes[prgm][0])
+        # print("ran ", modes[prgm][0])
         modes[prgm][2](live)
         cv2.imshow(prgmName,titlefeed)
         cv2.setMouseCallback(prgmName, mouse)

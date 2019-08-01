@@ -113,15 +113,22 @@ def main(live):
                  [0, 0, 0, 1]]
 
     camVid = cv2.VideoCapture('Countdown.mp4')
+    webCam = cv2.VideoCapture(0)
 
     while camVid.isOpened():
         ret, countImg = camVid.read()
+        _, overlay = webCam.read()
+        overlay = cv2.resize(overlay, (hgt, wid))
+        overlay = cv2.rotate(overlay, cv2.ROTATE_90_CLOCKWISE)
         if countImg is None:
             break
-        cv2.imshow(prgmName, countImg)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        countImg = cv2.resize(countImg, (wid, hgt))
+        finalImg = cv2.addWeighted(countImg, 0.5, overlay, 0.5, 0)
+        cv2.imshow(prgmName, finalImg)
+        if cv2.waitKey(10) & 0xFF == ord('q'):
             break
     camVid.release()
+    webCam.release()
     cv2.destroyAllWindows()
 
     cap = cv2.VideoCapture(0)
@@ -323,7 +330,7 @@ def main(live):
                                                            str(float(totalVelocity) / 10) + ';')).encode())
                                     # print (totalVelocity)
                                 elif (positions[values][frameNum[values]][0]<int(wid/2) and (frameNum[values] + (values+1)*50)%50*numBalls == 0):
-                                    print (totalVelocity)
+                                    # print (totalVelocity)
                                     sock1.sendall((str(
                                         positions[values][frameNum[values]][1] + 200 * values * musicSend[values][
                                             0]) + ' ' + str(

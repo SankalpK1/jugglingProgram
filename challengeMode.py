@@ -109,10 +109,10 @@ def main(live):
             cpts.append((x,y))
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             (h,s,v) = cv2.split(img2)
-            print(h[y][x])
+            # print(h[y][x])
             # print(countSelected)
             hsv_values.append([h[y][x],s[y][x],v[y][x]])
-            print (hsv_values)
+            # print (hsv_values)
             numClicked+=1
             if numClicked == 3:
                 numBalls+=1
@@ -228,20 +228,27 @@ def main(live):
         global yHeight
         if event == cv2.EVENT_LBUTTONDOWN:
             yHeight=y
-            print("sfsfgdsgssdsdgsdgsdsdgddssdgdsf")
+            # print("sfsfgdsgssdsdgsdgsdsdgddssdgdsf")
 
     cv2.setMouseCallback(prgmName,heightsel)
 
     camVid = cv2.VideoCapture('Countdown.mp4')
+    webCam = cv2.VideoCapture(0)
 
     while camVid.isOpened():
         ret, countImg = camVid.read()
+        _, overlay = webCam.read()
+        overlay = cv2.resize(overlay, (hgt, wid))
+        overlay = cv2.rotate(overlay, cv2.ROTATE_90_CLOCKWISE)
         if countImg is None:
             break
-        cv2.imshow(prgmName, countImg)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+        countImg = cv2.resize(countImg, (wid, hgt))
+        finalImg = cv2.addWeighted(countImg, 0.5, overlay, 0.5, 0)
+        cv2.imshow(prgmName, finalImg)
+        if cv2.waitKey(10) & 0xFF == ord('q'):
             break
     camVid.release()
+    webCam.release()
     cv2.destroyAllWindows()
 
     while True:
@@ -292,14 +299,16 @@ def main(live):
                             # if yVelocity[values] < 0 and yVelocityPrev[values] > 0:
                             #     numThrown+=1
                             #     print(numThrown)
-                            if (positions[values][frameNum[values]][1]>yHeight and isAbove[values] == 1):
-                                isAbove[values] = 0
-                                print (isAbove[values])
-                            if (positions[values][frameNum[values]][1]<yHeight and isAbove[values] == 0):
-                                numThrown+=1
-                                isAbove[values] = 1
-                                print (positions[values][frameNum[values]][1])
-                                print (isAbove[values])
+                            if (positions[values][frameNum[values]][1]>yHeight):
+                                if (isAbove[values] == 1):
+                                    isAbove[values] = 0
+                                    # print (isAbove[values])
+                            elif (positions[values][frameNum[values]][1]<yHeight):
+                                if (isAbove[values] == 0):
+                                    numThrown+=1
+                                    isAbove[values] = 1
+                                    # print (positions[values][frameNum[values]][1])
+                                    # print (isAbove[values])
                             if (numThrown == 1):
                                 cv2.putText(drawn, str(numThrown) + "Point!", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1,
                                         (255, 255, 255), 2)

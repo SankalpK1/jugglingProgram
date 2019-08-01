@@ -111,10 +111,10 @@ def main(live):
         if event == cv2.EVENT_LBUTTONDOWN:
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             (h,s,v) = cv2.split(img2)
-            print(h[y][x])
+            # print(h[y][x])
             # print(countSelected)
             hsv_values.append([h[y][x],s[y][x],v[y][x]])
-            print (hsv_values)
+            # print (hsv_values)
             numClicked+=1
             if numClicked == 3:
                 numBalls+=1
