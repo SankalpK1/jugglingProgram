@@ -232,6 +232,18 @@ def main(live):
 
     cv2.setMouseCallback(prgmName,heightsel)
 
+    camVid = cv2.VideoCapture('Countdown.mp4')
+
+    while camVid.isOpened():
+        ret, countImg = camVid.read()
+        if countImg is None:
+            break
+        cv2.imshow(prgmName, countImg)
+        if cv2.waitKey(25) & 0xFF == ord('q'):
+            break
+    camVid.release()
+    cv2.destroyAllWindows()
+
     while True:
 
         _,imgCam=cam.read()

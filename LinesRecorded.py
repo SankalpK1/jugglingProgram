@@ -73,8 +73,19 @@ def main():
 
     global numThrown
 
-    cap = cv2.VideoCapture(0)
+    camVid = cv2.VideoCapture('Countdown.mp4')
 
+    while camVid.isOpened():
+        ret, countImg = camVid.read()
+        if countImg is None:
+            break
+        cv2.imshow(prgmName, countImg)
+        if cv2.waitKey(25) & 0xFF == ord('q'):
+            break
+    camVid.release()
+    cv2.destroyAllWindows()
+
+    cap = cv2.VideoCapture(0)
     # Define the codec and create VideoWriter object
     fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
     out = cv2.VideoWriter('output.avi',fourcc, 20.0, (wid,hgt))
