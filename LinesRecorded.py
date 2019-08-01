@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-import math
-import colorsys
+# import math
+# import colorsys
 from window_info import *
 
 
@@ -73,7 +73,34 @@ def main():
 
     global numThrown
 
-    cam = cv2.VideoCapture("bettezev.mp4")
+    cap = cv2.VideoCapture(0)
+
+    # Define the codec and create VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
+    out = cv2.VideoWriter('output.avi',fourcc, 20.0, (wid,hgt))
+    # out = cv2.VideoWriter('output.avi', -1, 20.0, (640, 480))
+
+    while (cap.isOpened()):
+        ret, frame = cap.read()
+        if ret == True:
+            frame = cv2.resize(frame, (hgt, wid))
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+            # write the flipped frame
+            out.write(frame)
+
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(1) & 0xFF == ord(' '):
+                break
+        else:
+            break
+
+    # Release everything if job is finished
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
+
+    cam = cv2.VideoCapture('output.avi')
 
     frameNum = []
 
@@ -142,7 +169,6 @@ def main():
                 isAbove.append(0)
 
     _, img = cam.read()
-    img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
     drawn=img.copy()
     while True:
         if numClicked < 1:
@@ -160,7 +186,7 @@ def main():
             cv2.putText(drawn, "or hit space to continue", (10, 90), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255),
                         2)
             cv2.putText(drawn,"balls selected: "+str(numBalls),(10,hgt-50),cv2.FONT_HERSHEY_DUPLEX,1,(255,255,255),2)
-        else:
+        elif numClicked<2:
             drawn=img.copy()
             cv2.putText(drawn, "click the ball 2 more times", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5)
             cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
@@ -177,7 +203,23 @@ def main():
                 cv2.rectangle(drawn, (pt[0] - 1, pt[1]+3), (pt[0]+1, pt[1] +7), (255, 255, 255), -1)
                 cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] -7, pt[1] +1), (255, 255, 255), -1)
                 cv2.rectangle(drawn, (pt[0] +3, pt[1] -1), (pt[0] + 7, pt[1]+1), (255, 255, 255), -1)
-
+        else:
+            drawn = img.copy()
+            cv2.putText(drawn, "click the ball 1 more time", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 5)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (0, 0, 0), 5)
+            cv2.putText(drawn, "click the ball 1 more time", (10, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(drawn, "balls selected: " + str(numBalls), (10, hgt - 50), cv2.FONT_HERSHEY_DUPLEX, 1,
+                        (255, 255, 255), 2)
+            for pt in cpts:
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] - 3), (pt[0] + 1, pt[1] - 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] + 3), (pt[0] + 1, pt[1] + 7), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] - 7, pt[1] + 1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] + 3, pt[1] - 1), (pt[0] + 7, pt[1] + 1), (0, 0, 0), 2)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] - 3), (pt[0] + 1, pt[1] - 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 1, pt[1] + 3), (pt[0] + 1, pt[1] + 7), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] - 3, pt[1] - 1), (pt[0] - 7, pt[1] + 1), (255, 255, 255), -1)
+                cv2.rectangle(drawn, (pt[0] + 3, pt[1] - 1), (pt[0] + 7, pt[1] + 1), (255, 255, 255), -1)
 
         cv2.imshow(prgmName, drawn)
         cv2.setMouseCallback(prgmName, onmouse)
@@ -253,7 +295,7 @@ def main():
             # hsv_filtered = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
             # hsv_filtered2 = cv2.GaussianBlur(hsv_filtered, (17,17), 0)
             threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3 * values]),
-                                          (satValLower(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 50),
+                                          (satValLower(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 30),
                                     (hueUpper(hsv_values2[values][0], hsv_ranges[3 * values]),
                                      (satValUpper(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 225))
             threshold_filtered = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
@@ -270,7 +312,17 @@ def main():
                         # cv2.ellipse(img, ellipse, (0, 255, 0), 2)
                         # cv2.circle(img, (int((int(ellipse[0][1])+int(ellipse[1][1]))/2), int((int(ellipse[0][0])+int(ellipse[1][0]))/2)), 20, (255, 255, 255))
                         # cv2.circle(img, (int(ellipse[0][0]), int(ellipse[0][1])), 20, (255, 255, 255))
-                        positions[values].append([int(ellipse[0][0]), int(ellipse[0][1])])
+
+                        print(positions)
+                        if len(positions[0])>numBalls*2:
+                            prev=positions[values][-1]
+                            preprev=positions[values][-2]
+                            # print(prev,"    ",(int(ellipse[0][0]), int(ellipse[0][1])))
+                            positions[values].append([int((ellipse[0][0]+prev[0]+preprev[0])//3), int((ellipse[0][1]+prev[1]+preprev[1])//3)])
+                            # print (positions[values])
+                        else:
+                            positions[values].append([int(ellipse[0][0]), int(ellipse[0][1])])
+
                         frameNum[values] += 1
                         if frameNum[values] >= 2:
                             # xVelocityPrev[values] = positions[values][frameNum[values]-1][0] - positions[values][frameNum[values]-2][0]
@@ -351,8 +403,7 @@ def main():
     cv2.createTrackbar("Frame: ",prgmName,0,len(frames)-2,ontrack)
     cv2.createTrackbar("Speed: ", prgmName, 45, 57, speedchange)
     while True:
-        frame = cv2.rotate(frames[i], cv2.ROTATE_90_CLOCKWISE)
-        frame = cv2.resize(frame, (wid,hgt))
+        frame = cv2.resize(frames[i], (wid, hgt))
 
         cv2.imshow(prgmName,frame)
         if play and i<len(frames)-1:
