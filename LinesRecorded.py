@@ -77,13 +77,14 @@ def main():
 
     # Define the codec and create VideoWriter object
     fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
-    out = cv2.VideoWriter('output.avi',fourcc, 20.0, (hgt,wid))
+    out = cv2.VideoWriter('output.avi',fourcc, 20.0, (wid,hgt))
     # out = cv2.VideoWriter('output.avi', -1, 20.0, (640, 480))
 
     while (cap.isOpened()):
         ret, frame = cap.read()
         if ret == True:
             frame = cv2.resize(frame, (hgt, wid))
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
             # write the flipped frame
             out.write(frame)
@@ -168,7 +169,6 @@ def main():
                 isAbove.append(0)
 
     _, img = cam.read()
-    img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
     drawn=img.copy()
     while True:
         if numClicked < 1:
@@ -403,8 +403,7 @@ def main():
     cv2.createTrackbar("Frame: ",prgmName,0,len(frames)-2,ontrack)
     cv2.createTrackbar("Speed: ", prgmName, 45, 57, speedchange)
     while True:
-        frame = cv2.rotate(frames[i], cv2.ROTATE_90_CLOCKWISE)
-        frame = cv2.resize(frame, (wid,hgt))
+        frame = cv2.resize(frames[i], (wid, hgt))
 
         cv2.imshow(prgmName,frame)
         if play and i<len(frames)-1:
