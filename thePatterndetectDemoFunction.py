@@ -9,11 +9,12 @@ from frameratechecker import FramerateChecker
 import multiprocessing
 #import Tkinter as Tk
 import time
+from window_info import *
 def patterndetect(theParameter):
     handleTensorflowSession(memoryLimit=0.2)
     trickDetected = 0
-    gridModel = GridModel("./balls-and-hands-in-videos-of-juggling/grid_models/grid_model_submovavg_64x64.h5")
-    patternModel = load_model("thirtysix-juggling-patterns/pattern_models/3b_pattern_model.h5")
+    gridModel = GridModel("grid_model_submovavg_64x64.h5")
+    patternModel = load_model("3b_pattern_model.h5")
     #cap = theParameter.read()   # todo
     trickAvgstore = [0, 0, 0, 0 , 0 , 0 , 0 , 0 , 0 , 0, 0 , 0]
     history = []
@@ -31,8 +32,8 @@ def patterndetect(theParameter):
     cv2.putText(img3,
                 "Press 's' to start",
                 (800, 200), font, .7, (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.imshow('Program Name', img3)
-    cv2.moveWindow('Program Name', 0, 0)
+    cv2.imshow(prgmName, img3)
+    cv2.moveWindow(prgmName, 0, 0)
     while (True):
         ch = chr(0xFF & cv2.waitKey(0))
         if ch == 's':
@@ -79,8 +80,8 @@ def patterndetect(theParameter):
         drawBallsAndHands(img, ballsAndHands)
         img = cv2.resize(img, (640 * 2 + 480, 768), cv2.INTER_CUBIC)
 
-        cv2.imshow('Program Name', img)
-        cv2.moveWindow('Program Name', 90, 125)
+        cv2.imshow(prgmName, img)
+        cv2.moveWindow(prgmName, 90, 125)
         #cv2.waitKey(1)
         ch = chr(0xFF & cv2.waitKey(1))
 
@@ -94,8 +95,8 @@ def patterndetect(theParameter):
     img2 = np.zeros((256, 1024 + 128, 3), dtype=np.uint8)
     cv2.putText(img2, 'Trick Performed: '+ names[trickDetected], (50, 90), font, 2, (255, 255, 255), 2, cv2.LINE_AA)
     cv2.putText(img2, "(Press 'q' to close the window)", (90, 220), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
-    cv2.imshow('Program Name', img2)
-    cv2.moveWindow('Program Name', 300, 300)
+    cv2.imshow(prgmName, img2)
+    cv2.moveWindow(prgmName, 300, 300)
     '''label = Tk.Label(None, text=names[trickDetected], font=('Times', '18'), fg='blue')
     label.pack()
     label.mainloop()'''

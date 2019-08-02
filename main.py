@@ -9,8 +9,7 @@ from BackEndMode import main as back
 from window_info import *
 import math
 from BackEndMode import main as back
-
-
+from fpsdetectreal import *
 def empty(live):
     print("coming soon")
 
@@ -28,7 +27,7 @@ def drawButtons(number, margin):
         modes = [("practice", (0, 0, 255), Lines), ("challenge", (0, 210, 0), comp),
          ("back end", (255, 0, 0), back)]
     elif (not live):
-        modes = [("lines", (0, 0, 255), Lines), ("identifier", (0, 210, 0), empty),
+        modes = [("lines", (0, 0, 255), Lines), ("identifier", (0, 210, 0), maindetect),
                  ("musical", (255, 0, 0), music)]
     for i in range(number):
         blur = titlefeed[top: top + height, margin:wid - margin, :]

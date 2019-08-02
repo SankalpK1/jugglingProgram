@@ -230,8 +230,6 @@ def main(live):
             yHeight=y
             # print("sfsfgdsgssdsdgsdgsdsdgddssdgdsf")
 
-
-
     camVid = cv2.VideoCapture('Countdown.mp4')
     webCam = cv2.VideoCapture(0)
 
