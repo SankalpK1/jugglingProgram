@@ -340,7 +340,7 @@ def main(live):
                                                    str(positions[values][frameNum[values]][1] + 200 * values * musicSend[values][3]) + ' ' + (
                                         str(float(totalVelocity) / 10) + ';')).encode())
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                sock1.sendall('00 00 00 00 00;'.encode())
+                sock1.sendall('00 00 00 00 00;'.enqcode())
                 sock2.sendall('00 00 00 00 00;'.encode())
                 break
             cv2.imshow(prgmName, img)

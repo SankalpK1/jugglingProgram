@@ -107,7 +107,7 @@ def main():
             # write the flipped frame
             out.write(frame)
 
-            cv2.imshow('frame', frame)
+            cv2.imshow(prgmName, frame)
             if cv2.waitKey(1) & 0xFF == ord(' '):
                 break
         else:
@@ -161,7 +161,7 @@ def main():
             cpts.append((x,y))
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
             (h,s,v) = cv2.split(img2)
-            # print(h[y][x])
+            # printimsho(h[y][x])
             # print(countSelected)
             hsv_values.append([h[y][x],s[y][x],v[y][x]])
             # print (hsv_values)

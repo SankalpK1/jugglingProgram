@@ -253,7 +253,7 @@ def main(live):
         for values in range(numBalls):
             kernel = np.ones((3, 3), np.uint8)
             # hsv_filtered = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
-            img = cv2.GaussianBlur(img, (17,17), 0)
+            # img = cv2.GaussianBlur(img, (17,17), 0)
             threshold = cv2.inRange(hsv, (hueLower(hsv_values2[values][0], hsv_ranges[3 * values]),
                                           (satValLower(hsv_values2[values][1], hsv_ranges[3 * values + 1])), 50),
                                     (hueUpper(hsv_values2[values][0], hsv_ranges[3 * values]),
